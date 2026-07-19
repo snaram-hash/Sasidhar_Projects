@@ -84,7 +84,7 @@ The Brain of CUIS. Evaluates reconciled facts against configurable banking manda
 ### 📊 The CAM Generator & Dashboard
 Injects parsed data into bank-ready Excel templates using OpenPyXL and compiles a zero-dependency HTML interactive dashboard.
 <img src="screenshots/cam.svg" width="80%" />
-<img src="screenshots/dashboard.svg" width="80%" />
+<img src="screenshots/dashboard_real.png" width="80%" />
 
 ---
 
