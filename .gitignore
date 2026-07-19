@@ -166,3 +166,4 @@ powerbi_data/Top_Partners.csv
 *.xlsx
 !CAM_Template.xlsx
 !CAM_Template_New.xlsx
+!demo/output_samples/*.xlsx
