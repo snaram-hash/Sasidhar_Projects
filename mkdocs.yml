@@ -1,0 +1,50 @@
+site_name: CUIS Documentation
+site_description: Enterprise Credit Decision Support Platform
+site_author: Sasidhar Naram
+
+theme:
+  name: material
+  palette:
+    # Palette toggle for dark mode
+    - scheme: default
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    # Palette toggle for light mode
+    - scheme: slate
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.top
+    - search.suggest
+    - search.highlight
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - tables
+
+nav:
+  - Home: index.md
+  - Executive Summary: 01_Executive_Summary.md
+  - Business Problem: 02_Business_Problem.md
+  - System Architecture: 03_System_Architecture.md
+  - Engines & Modules: 04_Module_Design.md
+  - Database Design: 05_Database_Design.md
+  - Risk Policy Engine: 06_Risk_Engine.md
+  - CAM & Dashboard Generation: 07_CAM_Generation.md
+  - API Design: 08_API_Design.md
+  - Testing Strategy: 09_Testing.md
+  - Roadmap: 10_Future_Roadmap.md
+  - Architecture Decisions (ADRs):
+      - SQLite vs Postgres: adr/ADR-001-SQLite.md
+      - Rule Engine vs ML: adr/ADR-002-Rule-Engine.md
+      - Excel Injection: adr/ADR-003-CAM-Generation.md
+      - Spatial Regex Parsing: adr/ADR-004-Regex-Parsing.md
+  - Formal Case Study: Case_Study.md
