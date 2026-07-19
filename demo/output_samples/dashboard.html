@@ -1,0 +1,2375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Credit Risk Insights Dashboard - HARIKA SHIPPING & LOGISTICS</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-color: #0b0f19;
+            --card-bg: rgba(17, 24, 39, 0.7);
+            --card-border: rgba(255, 255, 255, 0.06);
+            --text-primary: #f3f4f6;
+            --text-secondary: #9ca3af;
+            --color-green: #10b981;
+            --color-yellow: #f59e0b;
+            --color-red: #ef4444;
+            --color-blue: #3b82f6;
+            --glow-green: rgba(16, 185, 129, 0.15);
+            --glow-red: rgba(239, 68, 68, 0.15);
+            --glow-yellow: rgba(245, 158, 11, 0.15);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(59, 130, 246, 0.05) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(16, 185, 129, 0.05) 0%, transparent 40%);
+            background-attachment: fixed;
+        }
+
+        /* Header Styling */
+        header {
+            background: rgba(17, 24, 39, 0.85);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--card-border);
+            padding: 1.25rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .brand i {
+            font-size: 1.75rem;
+            color: var(--color-blue);
+            text-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+        }
+
+        .brand-text h1 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            letter-spacing: -0.025em;
+        }
+
+        .brand-text p {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        .meta-tags {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .tag {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--card-border);
+            border-radius: 0.5rem;
+            padding: 0.35rem 0.75rem;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .tag span {
+            color: var(--text-secondary);
+        }
+
+        .tag strong {
+            color: var(--text-primary);
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Navigation Tabs */
+        .tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding-bottom: 0.75rem;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1rem;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .tab-btn:hover {
+            background: rgba(255, 255, 255, 0.03);
+            color: var(--text-primary);
+        }
+
+        .tab-btn.active {
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--color-blue);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+        }
+
+        /* Dashboard Grid Layouts */
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.4s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* KPI Cards Grid */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .kpi-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--card-border);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .kpi-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.4);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .kpi-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }
+
+        .kpi-title {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .kpi-icon {
+            width: 2.25rem;
+            height: 2.25rem;
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+        }
+
+        .kpi-value {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 0.5rem;
+        }
+
+        .kpi-trend {
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        /* Color classes */
+        .blue-theme { color: var(--color-blue); background: rgba(59, 130, 246, 0.1); }
+        .green-theme { color: var(--color-green); background: rgba(16, 185, 129, 0.1); }
+        .yellow-theme { color: var(--color-yellow); background: rgba(245, 158, 11, 0.1); }
+        .red-theme { color: var(--color-red); background: rgba(239, 68, 68, 0.1); }
+
+        /* Risk Badges */
+        .risk-glow-green { box-shadow: inset 0 0 15px var(--glow-green); border-color: rgba(16, 185, 129, 0.2); }
+        .risk-glow-red { box-shadow: inset 0 0 15px var(--glow-red); border-color: rgba(239, 68, 68, 0.2); }
+        .risk-glow-yellow { box-shadow: inset 0 0 15px var(--glow-yellow); border-color: rgba(245, 158, 11, 0.2); }
+
+        /* Visual Charts Grid */
+        .charts-grid-2 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(650px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .chart-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--card-border);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+        }
+
+        .chart-card h3 {
+            font-size: 1.05rem;
+            font-weight: 600;
+            margin-bottom: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #fff;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 350px;
+            width: 100%;
+        }
+
+        /* Alerts Table area */
+        .alert-section {
+            margin-top: 2rem;
+        }
+
+        .alert-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--card-border);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+        }
+
+        .alert-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.25rem;
+        }
+
+        .alert-header h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #fff;
+        }
+
+        .alert-filters {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .filter-select {
+            background: rgba(17, 24, 39, 0.8);
+            border: 1px solid var(--card-border);
+            color: var(--text-primary);
+            border-radius: 0.5rem;
+            padding: 0.4rem 1rem;
+            font-size: 0.85rem;
+            outline: none;
+            cursor: pointer;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.9rem;
+        }
+
+        th {
+            background: rgba(255, 255, 255, 0.02);
+            color: var(--text-secondary);
+            font-weight: 500;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.05em;
+            padding: 0.75rem 1rem;
+            position: sticky;
+            top: 0;
+            border-bottom: 1px solid var(--card-border);
+            z-index: 10;
+        }
+
+        td {
+            padding: 0.85rem 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+            color: var(--text-primary);
+        }
+
+        tr:hover td {
+            background: rgba(255, 255, 255, 0.01);
+        }
+
+        .badge {
+            padding: 0.2rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .badge-high {
+            background: rgba(239, 68, 68, 0.15);
+            color: var(--color-red);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        .badge-medium {
+            background: rgba(245, 158, 11, 0.15);
+            color: var(--color-yellow);
+            border: 1px solid rgba(245, 158, 11, 0.2);
+        }
+
+        /* Working Capital Gauges Grid */
+        .wc-gauges {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .gauge-item {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .gauge-label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-top: 0.75rem;
+            font-weight: 500;
+        }
+
+        .gauge-val {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-top: 0.25rem;
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.01);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header>
+        <div class="brand">
+            <i class="fa-solid fa-shield-halved"></i>
+            <div class="brand-text">
+                <h1>Credit Risk Insights & Scorecard</h1>
+                <p>Advanced Financial Risk Analytics Engine</p>
+            </div>
+        </div>
+        <div class="meta-tags">
+            <div class="tag"><i class="fa-solid fa-building"></i> <span>Company:</span> <strong>HARIKA SHIPPING & LOGISTICS</strong></div>
+            <div class="tag"><i class="fa-solid fa-address-card"></i> <span>PAN:</span> <strong>ABZPV8982E</strong></div>
+            <div class="tag"><i class="fa-solid fa-fingerprint"></i> <span>GSTIN:</span> <strong>37ABZPV8982E1ZF</strong></div>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Tab navigation -->
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('scorecard')">
+                <i class="fa-solid fa-chart-pie"></i> Credit Scorecard & Trends
+            </button>
+            <button class="tab-btn" onclick="switchTab('banking')">
+                <i class="fa-solid fa-building-columns"></i> Banking Performance & Diverison Risks
+            </button>
+        </div>
+
+        <!-- PAGE 1: SCORECARD -->
+        <div id="scorecard" class="tab-content active">
+            <!-- Top KPI Cards -->
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="kpi-header">
+                        <span class="kpi-title">Turnover (FY24)</span>
+                        <div class="kpi-icon blue-theme"><i class="fa-solid fa-money-bill-trend-up"></i></div>
+                    </div>
+                    <div class="kpi-value" id="kpi-turnover">0.00</div>
+                    <div class="kpi-trend"><span class="blue-theme"><i class="fa-solid fa-info-circle"></i></span> Audited Receipts</div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-header">
+                        <span class="kpi-title">Net Profit Margin</span>
+                        <div class="kpi-icon blue-theme"><i class="fa-solid fa-percent"></i></div>
+                    </div>
+                    <div class="kpi-value" id="kpi-margin">0.00%</div>
+                    <div class="kpi-trend"><span class="blue-theme" id="kpi-pat">0.0</span> PAT in INR</div>
+                </div>
+
+                <div class="kpi-card risk-glow-green" id="card-current-ratio">
+                    <div class="kpi-header">
+                        <span class="kpi-title">Current Ratio</span>
+                        <div class="kpi-icon green-theme" id="icon-current-ratio"><i class="fa-solid fa-scale-balanced"></i></div>
+                    </div>
+                    <div class="kpi-value" id="kpi-curr-ratio">0.00</div>
+                    <div class="kpi-trend" id="trend-curr-ratio">Low Risk (&gt;1.33)</div>
+                </div>
+
+                <div class="kpi-card risk-glow-red" id="card-leverage">
+                    <div class="kpi-header">
+                        <span class="kpi-title">Leverage Ratio (D/E)</span>
+                        <div class="kpi-icon red-theme" id="icon-leverage"><i class="fa-solid fa-handshake-angle"></i></div>
+                    </div>
+                    <div class="kpi-value" id="kpi-leverage">0.00</div>
+                    <div class="kpi-trend" id="trend-leverage">High Risk (&gt;3.00)</div>
+                </div>
+
+                <div class="kpi-card risk-glow-red" id="card-credit-status">
+                    <div class="kpi-header">
+                        <span class="kpi-title">Credit Risk Rating</span>
+                        <div class="kpi-icon red-theme" id="icon-credit-status"><i class="fa-solid fa-gauge-high"></i></div>
+                    </div>
+                    <div class="kpi-value" id="kpi-credit-status">HIGH RISK</div>
+                    <div class="kpi-trend"><span class="red-theme"><i class="fa-solid fa-triangle-exclamation"></i></span> Scorecard Model</div>
+                </div>
+            </div>
+
+            <!-- Charts Row 1 -->
+            <div class="charts-grid-2">
+                <div class="chart-card">
+                    <h3><i class="fa-solid fa-chart-line"></i> Turnover vs PAT Margin Trend (Audited Financials)</h3>
+                    <div class="chart-container">
+                        <canvas id="turnoverChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="chart-card">
+                    <h3><i class="fa-solid fa-cubes"></i> Reserves & Net Worth accumulation (INR)</h3>
+                    <div class="chart-container">
+                        <canvas id="reservesChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Working Capital management row -->
+            <div class="charts-grid-2">
+                <div class="chart-card">
+                    <h3><i class="fa-solid fa-retweet"></i> Working Capital Cycle Gauges</h3>
+                    <div class="wc-gauges">
+                        <div class="gauge-item">
+                            <div style="position: relative; width: 140px; height: 140px;">
+                                <canvas id="gaugeDebtors"></canvas>
+                            </div>
+                            <div class="gauge-label">Debtors Days</div>
+                            <div class="gauge-val red-theme" id="val-debtors">0 Days</div>
+                        </div>
+                        <div class="gauge-item">
+                            <div style="position: relative; width: 140px; height: 140px;">
+                                <canvas id="gaugeCreditors"></canvas>
+                            </div>
+                            <div class="gauge-label">Creditors Days</div>
+                            <div class="gauge-val yellow-theme" id="val-creditors">0 Days</div>
+                        </div>
+                        <div class="gauge-item">
+                            <div style="position: relative; width: 140px; height: 140px;">
+                                <canvas id="gaugeInventory"></canvas>
+                            </div>
+                            <div class="gauge-label">Inventory Days</div>
+                            <div class="gauge-val green-theme" id="val-inventory">0 Days</div>
+                        </div>
+                    </div>
+                    <div style="background: rgba(255, 255, 255, 0.02); border-radius: 0.5rem; padding: 1rem; border: 1px dashed var(--card-border); margin-top: 1rem;">
+                        <p style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.5; text-align: left;">
+                            <strong>Net Operating Working Capital Cycle:</strong> <strong style="color: #fff;" id="val-wcc">0.0 Days</strong>.
+                            <br><br>
+                            <strong>Interpretation & Financial Linkages:</strong>
+                            <br>
+                            • <strong>Liquidity & Current Ratio:</strong> A longer working capital cycle (high debtor/inventory days) directly inflates Current Assets, yielding a higher Current Ratio that may mask actual cash flow constraints (low cash conversion).
+                            <br>
+                            • <strong>Seasonality Impact:</strong> During peak (on-season) periods, debtor days typically expand as sales spike, requiring high credit utilization (OD limit drawing). During slack (off-season) periods, collection speed is critical to service fixed interest costs and prevent liquidity strain.
+                            <br>
+                            • <strong>Creditors as Source:</strong> Higher payables days indicate supplier credit is funding operations, but stretching creditors excessively can disrupt supplier relationships and indicate potential cash crunches.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="chart-card">
+                    <h3><i class="fa-solid fa-building-user"></i> Balance Sheet Summary (3-Year Trends - INR Lakhs)</h3>
+                    <div style="display: flex; align-items: center; min-height: 250px;">
+                        <table style="width: 100%; border-collapse: collapse; font-size: 0.82rem; text-align: left;">
+                            <thead>
+                                <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+                                    <th style="padding: 0.5rem 0.25rem; font-size: 0.75rem;">Particulars</th>
+                                    <th style="padding: 0.5rem 0.25rem; font-size: 0.75rem; text-align: right;">FY22</th>
+                                    <th style="padding: 0.5rem 0.25rem; font-size: 0.75rem; text-align: right;">FY23</th>
+                                    <th style="padding: 0.5rem 0.25rem; font-size: 0.75rem; text-align: right;">FY24</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td style="padding: 0.5rem 0.25rem;">Share Capital</td>
+                                    <td id="bs-capital-fy22" style="padding: 0.5rem 0.25rem; text-align: right;">-</td>
+                                    <td id="bs-capital-fy23" style="padding: 0.5rem 0.25rem; text-align: right;">-</td>
+                                    <td id="bs-capital-fy24" style="padding: 0.5rem 0.25rem; text-align: right;">-</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 0.5rem 0.25rem;">Reserves & Surplus</td>
+                                    <td id="bs-reserves-fy22" style="padding: 0.5rem 0.25rem; text-align: right;">-</td>
+                                    <td id="bs-reserves-fy23" style="padding: 0.5rem 0.25rem; text-align: right;">-</td>
+                                    <td id="bs-reserves-fy24" style="padding: 0.5rem 0.25rem; text-align: right;">-</td>
+                                </tr>
+                                <tr style="font-weight: 600; border-top: 1px solid rgba(255,255,255,0.05); border-bottom: 1px solid rgba(255,255,255,0.05); color: #fff;">
+                                    <td style="padding: 0.5rem 0.25rem;">Tangible Net Worth (TNW)</td>
+                                    <td id="bs-tnw-fy22" style="padding: 0.5rem 0.25rem; text-align: right;">-</td>
+                                    <td id="bs-tnw-fy23" style="padding: 0.5rem 0.25rem; text-align: right;">-</td>
+                                    <td id="bs-tnw-fy24" style="padding: 0.5rem 0.25rem; text-align: right;">-</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 0.5rem 0.25rem;">Secured Borrowings</td>
+                                    <td id="bs-loans-fy22" style="padding: 0.5rem 0.25rem; text-align: right;">-</td>
+                                    <td id="bs-loans-fy23" style="padding: 0.5rem 0.25rem; text-align: right;">-</td>
+                                    <td id="bs-loans-fy24" style="padding: 0.5rem 0.25rem; text-align: right;">-</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 0.5rem 0.25rem;">Short Term CC/OD Limits</td>
+                                    <td id="bs-od-fy22" style="padding: 0.5rem 0.25rem; text-align: right;">-</td>
+                                    <td id="bs-od-fy23" style="padding: 0.5rem 0.25rem; text-align: right;">-</td>
+                                    <td id="bs-od-fy24" style="padding: 0.5rem 0.25rem; text-align: right;">-</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 0.5rem 0.25rem;">Current Assets</td>
+                                    <td id="bs-ca-fy22" style="padding: 0.5rem 0.25rem; text-align: right;">-</td>
+                                    <td id="bs-ca-fy23" style="padding: 0.5rem 0.25rem; text-align: right;">-</td>
+                                    <td id="bs-ca-fy24" style="padding: 0.5rem 0.25rem; text-align: right;">-</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 0.5rem 0.25rem;">Current Liabilities</td>
+                                    <td id="bs-cl-fy22" style="padding: 0.5rem 0.25rem; text-align: right;">-</td>
+                                    <td id="bs-cl-fy23" style="padding: 0.5rem 0.25rem; text-align: right;">-</td>
+                                    <td id="bs-cl-fy24" style="padding: 0.5rem 0.25rem; text-align: right;">-</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 3-Year Ratios Table Card -->
+            <div class="charts-grid-2" style="margin-top: 1.5rem;">
+                <div class="chart-card" style="grid-column: span 2;">
+                    <h3><i class="fa-solid fa-calculator"></i> Key Financial Ratios (3-Year Trends)</h3>
+                    <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem; text-align: left;">
+                        <thead>
+                            <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+                                <th style="padding: 0.6rem 0.5rem; font-size: 0.75rem;">Ratio Description</th>
+                                <th style="padding: 0.6rem 0.5rem; font-size: 0.75rem; text-align: right; width: 15%;">FY22</th>
+                                <th style="padding: 0.6rem 0.5rem; font-size: 0.75rem; text-align: right; width: 15%;">FY23</th>
+                                <th style="padding: 0.6rem 0.5rem; font-size: 0.75rem; text-align: right; width: 15%;">FY24</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td style="padding: 0.6rem 0.5rem;">Gross Profit Margin (%)</td>
+                                <td id="ratio-gp-fy22" style="padding: 0.6rem 0.5rem; text-align: right; font-weight: 500;">-</td>
+                                <td id="ratio-gp-fy23" style="padding: 0.6rem 0.5rem; text-align: right; font-weight: 500;">-</td>
+                                <td id="ratio-gp-fy24" style="padding: 0.6rem 0.5rem; text-align: right; font-weight: 500;">-</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 0.6rem 0.5rem;">Net Profit Margin (%)</td>
+                                <td id="ratio-np-fy22" style="padding: 0.6rem 0.5rem; text-align: right; font-weight: 500;">-</td>
+                                <td id="ratio-np-fy23" style="padding: 0.6rem 0.5rem; text-align: right; font-weight: 500;">-</td>
+                                <td id="ratio-np-fy24" style="padding: 0.6rem 0.5rem; text-align: right; font-weight: 500;">-</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 0.6rem 0.5rem;">EBITDA Margin (%)</td>
+                                <td id="ratio-ebitda-fy22" style="padding: 0.6rem 0.5rem; text-align: right; font-weight: 500;">-</td>
+                                <td id="ratio-ebitda-fy23" style="padding: 0.6rem 0.5rem; text-align: right; font-weight: 500;">-</td>
+                                <td id="ratio-ebitda-fy24" style="padding: 0.6rem 0.5rem; text-align: right; font-weight: 500;">-</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 0.6rem 0.5rem;">Debt / Equity Ratio (D/E)</td>
+                                <td id="ratio-de-fy22" style="padding: 0.6rem 0.5rem; text-align: right; font-weight: 500;">-</td>
+                                <td id="ratio-de-fy23" style="padding: 0.6rem 0.5rem; text-align: right; font-weight: 500;">-</td>
+                                <td id="ratio-de-fy24" style="padding: 0.6rem 0.5rem; text-align: right; font-weight: 500;">-</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 0.6rem 0.5rem;">Leverage Ratio (Total Debt + Creditors / TNW)</td>
+                                <td id="ratio-lev-fy22" style="padding: 0.6rem 0.5rem; text-align: right; font-weight: 500;">-</td>
+                                <td id="ratio-lev-fy23" style="padding: 0.6rem 0.5rem; text-align: right; font-weight: 500;">-</td>
+                                <td id="ratio-lev-fy24" style="padding: 0.6rem 0.5rem; text-align: right; font-weight: 500;">-</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 0.6rem 0.5rem;">Interest Coverage Ratio</td>
+                                <td id="ratio-ic-fy22" style="padding: 0.6rem 0.5rem; text-align: right; font-weight: 500;">-</td>
+                                <td id="ratio-ic-fy23" style="padding: 0.6rem 0.5rem; text-align: right; font-weight: 500;">-</td>
+                                <td id="ratio-ic-fy24" style="padding: 0.6rem 0.5rem; text-align: right; font-weight: 500;">-</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 0.6rem 0.5rem;">Current Ratio</td>
+                                <td id="ratio-curr-fy22" style="padding: 0.6rem 0.5rem; text-align: right; font-weight: 500;">-</td>
+                                <td id="ratio-curr-fy23" style="padding: 0.6rem 0.5rem; text-align: right; font-weight: 500;">-</td>
+                                <td id="ratio-curr-fy24" style="padding: 0.6rem 0.5rem; text-align: right; font-weight: 500;">-</td>
+                            </tr>
+                            <tr style="font-weight: 600; border-top: 1px solid rgba(255,255,255,0.05); color: #fff;">
+                                <td style="padding: 0.6rem 0.5rem;">Working Capital Cycle (Days)</td>
+                                <td id="ratio-wc-fy22" style="padding: 0.6rem 0.5rem; text-align: right;">-</td>
+                                <td id="ratio-wc-fy23" style="padding: 0.6rem 0.5rem; text-align: right;">-</td>
+                                <td id="ratio-wc-fy24" style="padding: 0.6rem 0.5rem; text-align: right;">-</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- PAGE 2: BANKING & CASH FLOW -->
+        <div id="banking" class="tab-content">
+            <!-- Top Row Widgets -->
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="kpi-header">
+                        <span class="kpi-title">Total Banking Credits</span>
+                        <div class="kpi-icon blue-theme"><i class="fa-solid fa-arrow-trend-up"></i></div>
+                    </div>
+                    <div class="kpi-value" id="kpi-bank-credits">0.00</div>
+                    <div class="kpi-trend"><span class="blue-theme" id="kpi-bank-months">15 Months</span> Aggregate</div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-header">
+                        <span class="kpi-title">BTO (Credits/Audited Sales)</span>
+                        <div class="kpi-icon green-theme" id="icon-bto"><i class="fa-solid fa-percentage"></i></div>
+                    </div>
+                    <div class="kpi-value" id="kpi-bto">0.00x</div>
+                    <div class="kpi-trend" id="trend-bto">Ideal Range: 0.90x - 1.10x</div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-header">
+                        <span class="kpi-title">Monthly Bounces</span>
+                        <div class="kpi-icon red-theme"><i class="fa-solid fa-ban"></i></div>
+                    </div>
+                    <div class="kpi-value" id="kpi-bounces">0</div>
+                    <div class="kpi-trend" id="trend-bounces">Inward & Outward Returns</div>
+                </div>
+
+                <div class="kpi-card risk-glow-red">
+                    <div class="kpi-header">
+                        <span class="kpi-title">Siphoning Risk Alerts</span>
+                        <div class="kpi-icon red-theme"><i class="fa-solid fa-circle-exclamation"></i></div>
+                    </div>
+                    <div class="kpi-value" id="kpi-alerts-count">0</div>
+                    <div class="kpi-trend"><span class="red-theme"><i class="fa-solid fa-magnifying-glass-dollar"></i></span> Proprietor Transfers</div>
+                </div>
+            </div>
+
+            <!-- Charts Row 2 -->
+            <div class="charts-grid-2">
+                <div class="chart-card">
+                    <h3><i class="fa-solid fa-chart-column"></i> Monthly Banking Credits vs Debits</h3>
+                    <div class="chart-container">
+                        <canvas id="monthlyFlowChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="chart-card">
+                    <h3><i class="fa-solid fa-code-compare"></i> GST Turnover vs Bank Credits</h3>
+                    <div class="chart-container">
+                        <canvas id="gstVsBankChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- OD Utilization & Bounces -->
+            <div class="charts-grid-2">
+                <div class="chart-card">
+                    <h3><i class="fa-solid fa-gauge"></i> Peak OD Limit Utilization Trend</h3>
+                    <div class="chart-container">
+                        <canvas id="odUtilChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="chart-card">
+                    <h3><i class="fa-solid fa-circle-exclamation"></i> Inward vs Outward Bounces Trend</h3>
+                    <div class="chart-container">
+                        <canvas id="bounceChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Alerts Table Section -->
+            <div class="alert-section">
+                <div class="alert-card">
+                    <div class="alert-header">
+                        <h3><i class="fa-solid fa-triangle-exclamation" style="color: var(--color-red);"></i> Transaction-Level Potential Siphoning Alerts</h3>
+                        <div class="alert-filters">
+                            <select id="filter-risk" class="filter-select" onchange="filterAlerts()">
+                                <option value="all">All Risk Levels</option>
+                                <option value="High">High Risk Only</option>
+                                <option value="Medium">Medium Risk Only</option>
+                            </select>
+                            <select id="filter-type" class="filter-select" onchange="filterAlerts()">
+                                <option value="all">All Alert Types</option>
+                                <option value="Proprietor Transfer">Proprietor Transfers</option>
+                                <option value="Self Transfer">Self Transfers</option>
+                                <option value="High Value Cash Withdrawal">High-Value Cash Withdrawals</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Amount (INR)</th>
+                                    <th>Narration</th>
+                                    <th>Alert Type</th>
+                                    <th>Risk Level</th>
+                                </tr>
+                            </thead>
+                            <tbody id="alerts-table-body">
+                                <!-- Dynamic content -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Top Suppliers & Clients Section -->
+            <div class="charts-grid-2" style="margin-top: 2rem;">
+                <div class="chart-card">
+                    <h3><i class="fa-solid fa-users" style="color: var(--color-green);"></i> Top 3 Clients (Receipt Sources)</h3>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Client Name</th>
+                                    <th>Total Credit Value</th>
+                                </tr>
+                            </thead>
+                            <tbody id="clients-table-body">
+                                <!-- Dynamic content -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <div class="chart-card">
+                    <h3><i class="fa-solid fa-truck" style="color: var(--color-yellow);"></i> Top 3 Suppliers (Payment Destinations)</h3>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Supplier Name</th>
+                                    <th>Total Debit Value</th>
+                                </tr>
+                            </thead>
+                            <tbody id="suppliers-table-body">
+                                <!-- Dynamic content -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Raw Data Payload -->
+    <script id="raw-payload" type="application/json">
+{
+  "company": {
+    "CompanyKey": 1,
+    "LegalName": "HARIKA SHIPPING & LOGISTICS",
+    "PAN": "ABZPV8982E",
+    "GSTIN": "37ABZPV8982E1ZF",
+    "Constitution": "Proprietorship",
+    "IndustrySegment": "Shipping & Logistics"
+  },
+  "financials": [
+    {
+      "CompanyKey": 1,
+      "FinancialYear": "FY22",
+      "Sales": 304692736.0,
+      "PAT": 6749130.0,
+      "Depreciation": 2933594.0,
+      "InterestPaid": 6320239.0,
+      "Reserves": 39947652.0,
+      "NetWorth": 49981135.0,
+      "ShareCapital": 10033483.0,
+      "CurrentAssets": 100562139.0,
+      "CurrentLiabilities": 61014247.0,
+      "SecuredLoans": 92023954.0,
+      "UnsecuredLoans": 0.0,
+      "WorkingCapitalLimits": 0.0,
+      "Purchases": 9916200.0,
+      "Debtors": 56893993.0,
+      "Creditors": 60262859.0,
+      "Inventory": 0.0,
+      "FixedAssets": 98244976.0,
+      "DirectExpenses": 263960618.0,
+      "EmployeeExpenses": 8184549.0,
+      "OtherIncome": 3650529.0
+    },
+    {
+      "CompanyKey": 1,
+      "FinancialYear": "FY23",
+      "Sales": 125769145.0,
+      "PAT": 7896622.0,
+      "Depreciation": 2503223.0,
+      "InterestPaid": 7591544.0,
+      "Reserves": 0.0,
+      "NetWorth": 55568417.0,
+      "ShareCapital": 55568417.0,
+      "CurrentAssets": 116767949.0,
+      "CurrentLiabilities": 114039889.0,
+      "SecuredLoans": 112287227.0,
+      "UnsecuredLoans": 0.0,
+      "WorkingCapitalLimits": 0.0,
+      "Purchases": 0.0,
+      "Debtors": 104875390.0,
+      "Creditors": 102727640.0,
+      "Inventory": 0.0,
+      "FixedAssets": 95798392.0,
+      "DirectExpenses": 270093298.0,
+      "EmployeeExpenses": 7097770.0,
+      "OtherIncome": 180515917.0
+    },
+    {
+      "CompanyKey": 1,
+      "FinancialYear": "FY24",
+      "Sales": 313348371.15,
+      "PAT": 7807738.08,
+      "Depreciation": 2182123.0,
+      "InterestPaid": 11843613.38,
+      "Reserves": 7807738.08,
+      "NetWorth": 54466848.09,
+      "ShareCapital": 46659110.01,
+      "CurrentAssets": 154808908.12,
+      "CurrentLiabilities": 81524159.41,
+      "SecuredLoans": 90996379.75,
+      "UnsecuredLoans": 0.0,
+      "WorkingCapitalLimits": 92603159.07,
+      "Purchases": 1500000.0,
+      "Debtors": 149150457.24,
+      "Creditors": 81524159.41,
+      "Inventory": 0.0,
+      "FixedAssets": 91497809.46,
+      "DirectExpenses": 276613303.42,
+      "EmployeeExpenses": 5679407.0,
+      "OtherIncome": 5743557.58
+    }
+  ],
+  "banking": [
+    {
+      "CompanyKey": 1,
+      "MonthStart": "2024-04-01",
+      "BankName": "AU SMALL FINANCE BANK",
+      "AccountNo": 192837465012,
+      "SanctionLimit": 47827000.0,
+      "TotalCredits": 72069419.0,
+      "TotalDebits": 72690822.0,
+      "PeakODBalance": -46831683.54,
+      "InterestPaid": 331693.0,
+      "NoOfDebits": 431,
+      "NoOfCredits": 55,
+      "InwardBounces": 0,
+      "OutwardBounces": 0,
+      "Balance_1st": 0.0,
+      "Balance_5th": -45048410.0,
+      "Balance_7th": -45010813.54,
+      "Balance_15th": -43596745.79,
+      "Balance_20th": -39770107.5,
+      "Balance_25th": -39056726.87
+    },
+    {
+      "CompanyKey": 1,
+      "MonthStart": "2024-05-01",
+      "BankName": "AU SMALL FINANCE BANK",
+      "AccountNo": 192837465012,
+      "SanctionLimit": 47827000.0,
+      "TotalCredits": 17086857.0,
+      "TotalDebits": 20954839.0,
+      "PeakODBalance": -46065338.4,
+      "InterestPaid": 361485.0,
+      "NoOfDebits": 360,
+      "NoOfCredits": 35,
+      "InwardBounces": 0,
+      "OutwardBounces": 0,
+      "Balance_1st": -41559736.44,
+      "Balance_5th": -44355126.44,
+      "Balance_7th": -44330646.5,
+      "Balance_15th": -41644904.4,
+      "Balance_20th": -43921251.96,
+      "Balance_25th": -44656694.21
+    },
+    {
+      "CompanyKey": 1,
+      "MonthStart": "2024-06-01",
+      "BankName": "AU SMALL FINANCE BANK",
+      "AccountNo": 192837465012,
+      "SanctionLimit": 47827000.0,
+      "TotalCredits": 45029187.0,
+      "TotalDebits": 46812016.0,
+      "PeakODBalance": -47752919.3,
+      "InterestPaid": 351489.0,
+      "NoOfDebits": 322,
+      "NoOfCredits": 45,
+      "InwardBounces": 0,
+      "OutwardBounces": 0,
+      "Balance_1st": -18160828.03,
+      "Balance_5th": -44950956.88,
+      "Balance_7th": -46106008.4,
+      "Balance_15th": -42251481.31,
+      "Balance_20th": -44329233.01,
+      "Balance_25th": -46034495.01
+    },
+    {
+      "CompanyKey": 1,
+      "MonthStart": "2024-07-01",
+      "BankName": "AU SMALL FINANCE BANK",
+      "AccountNo": 192837465012,
+      "SanctionLimit": 47827000.0,
+      "TotalCredits": 44225786.0,
+      "TotalDebits": 40874814.0,
+      "PeakODBalance": -48648184.98,
+      "InterestPaid": 378136.0,
+      "NoOfDebits": 389,
+      "NoOfCredits": 41,
+      "InwardBounces": 0,
+      "OutwardBounces": 0,
+      "Balance_1st": -47748343.61,
+      "Balance_5th": -44166921.26,
+      "Balance_7th": -45082635.26,
+      "Balance_15th": -43912748.98,
+      "Balance_20th": -40614775.83,
+      "Balance_25th": -46270504.92
+    },
+    {
+      "CompanyKey": 1,
+      "MonthStart": "2024-08-01",
+      "BankName": "AU SMALL FINANCE BANK",
+      "AccountNo": 192837465012,
+      "SanctionLimit": 47827000.0,
+      "TotalCredits": 26427617.0,
+      "TotalDebits": 31934051.0,
+      "PeakODBalance": -49366014.39,
+      "InterestPaid": 408093.0,
+      "NoOfDebits": 435,
+      "NoOfCredits": 52,
+      "InwardBounces": 0,
+      "OutwardBounces": 0,
+      "Balance_1st": -44427213.06,
+      "Balance_5th": -46295460.2,
+      "Balance_7th": -44629535.79,
+      "Balance_15th": -47717826.59,
+      "Balance_20th": -48407794.21,
+      "Balance_25th": -49329503.68
+    },
+    {
+      "CompanyKey": 1,
+      "MonthStart": "2024-09-01",
+      "BankName": "AU SMALL FINANCE BANK",
+      "AccountNo": 192837465012,
+      "SanctionLimit": 47827000.0,
+      "TotalCredits": 39797426.0,
+      "TotalDebits": 36650959.0,
+      "PeakODBalance": -49973029.0,
+      "InterestPaid": 382940.0,
+      "NoOfDebits": 515,
+      "NoOfCredits": 74,
+      "InwardBounces": 0,
+      "OutwardBounces": 0,
+      "Balance_1st": -49366014.39,
+      "Balance_5th": -40727888.41,
+      "Balance_7th": -41862810.41,
+      "Balance_15th": -45858969.83,
+      "Balance_20th": -48810476.66,
+      "Balance_25th": -48657409.64
+    },
+    {
+      "CompanyKey": 1,
+      "MonthStart": "2024-10-01",
+      "BankName": "AU SMALL FINANCE BANK",
+      "AccountNo": 192837465012,
+      "SanctionLimit": 47827000.0,
+      "TotalCredits": 56399960.0,
+      "TotalDebits": 58419060.0,
+      "PeakODBalance": -49615246.76,
+      "InterestPaid": 399478.0,
+      "NoOfDebits": 493,
+      "NoOfCredits": 66,
+      "InwardBounces": 0,
+      "OutwardBounces": 0,
+      "Balance_1st": -46791390.83,
+      "Balance_5th": -48852859.13,
+      "Balance_7th": -49122051.13,
+      "Balance_15th": -49074828.76,
+      "Balance_20th": -47513860.89,
+      "Balance_25th": -46802518.75
+    },
+    {
+      "CompanyKey": 1,
+      "MonthStart": "2024-11-01",
+      "BankName": "AU SMALL FINANCE BANK",
+      "AccountNo": 192837465012,
+      "SanctionLimit": 47827000.0,
+      "TotalCredits": 53844658.0,
+      "TotalDebits": 50544078.0,
+      "PeakODBalance": -49922300.29,
+      "InterestPaid": 392319.0,
+      "NoOfDebits": 474,
+      "NoOfCredits": 51,
+      "InwardBounces": 0,
+      "OutwardBounces": 0,
+      "Balance_1st": -48552364.02,
+      "Balance_5th": -48451975.85,
+      "Balance_7th": -49343700.29,
+      "Balance_15th": -46156841.99,
+      "Balance_20th": -45106689.86,
+      "Balance_25th": -47875704.24
+    },
+    {
+      "CompanyKey": 1,
+      "MonthStart": "2024-12-01",
+      "BankName": "AU SMALL FINANCE BANK",
+      "AccountNo": 192837465012,
+      "SanctionLimit": 47827000.0,
+      "TotalCredits": 29598243.0,
+      "TotalDebits": 33947440.0,
+      "PeakODBalance": -49898845.98,
+      "InterestPaid": 408947.0,
+      "NoOfDebits": 477,
+      "NoOfCredits": 58,
+      "InwardBounces": 0,
+      "OutwardBounces": 0,
+      "Balance_1st": -44938067.38,
+      "Balance_5th": -49128518.79,
+      "Balance_7th": -44507917.37,
+      "Balance_15th": -49616244.22,
+      "Balance_20th": -44276462.65,
+      "Balance_25th": -48111066.73
+    },
+    {
+      "CompanyKey": 1,
+      "MonthStart": "2025-01-01",
+      "BankName": "AU SMALL FINANCE BANK",
+      "AccountNo": 192837465012,
+      "SanctionLimit": 47827000.0,
+      "TotalCredits": 72175364.0,
+      "TotalDebits": 72788211.0,
+      "PeakODBalance": -49973670.98,
+      "InterestPaid": 407178.0,
+      "NoOfDebits": 422,
+      "NoOfCredits": 55,
+      "InwardBounces": 2,
+      "OutwardBounces": 0,
+      "Balance_1st": -49287265.98,
+      "Balance_5th": -47506805.8,
+      "Balance_7th": -45739633.42,
+      "Balance_15th": -44633805.34,
+      "Balance_20th": -45767949.79,
+      "Balance_25th": -47718048.07
+    },
+    {
+      "CompanyKey": 1,
+      "MonthStart": "2025-02-01",
+      "BankName": "AU SMALL FINANCE BANK",
+      "AccountNo": 192837465012,
+      "SanctionLimit": 47827000.0,
+      "TotalCredits": 67256653.0,
+      "TotalDebits": 59680497.0,
+      "PeakODBalance": -50000000.0,
+      "InterestPaid": 331130.0,
+      "NoOfDebits": 287,
+      "NoOfCredits": 65,
+      "InwardBounces": 0,
+      "OutwardBounces": 0,
+      "Balance_1st": -48887638.11,
+      "Balance_5th": -48970077.11,
+      "Balance_7th": -39756916.25,
+      "Balance_15th": -41923125.29,
+      "Balance_20th": -44480793.94,
+      "Balance_25th": -41149271.81
+    },
+    {
+      "CompanyKey": 1,
+      "MonthStart": "2025-03-01",
+      "BankName": "AU SMALL FINANCE BANK",
+      "AccountNo": 192837465012,
+      "SanctionLimit": 47827000.0,
+      "TotalCredits": 126872544.0,
+      "TotalDebits": 35323139.0,
+      "PeakODBalance": -49813436.85,
+      "InterestPaid": 213537.0,
+      "NoOfDebits": 328,
+      "NoOfCredits": 80,
+      "InwardBounces": 0,
+      "OutwardBounces": 3,
+      "Balance_1st": -43653737.57,
+      "Balance_5th": -49027079.35,
+      "Balance_7th": -48640223.85,
+      "Balance_15th": -48139147.85,
+      "Balance_20th": 46854399.0,
+      "Balance_25th": 45799372.37
+    },
+    {
+      "CompanyKey": 1,
+      "MonthStart": "2025-04-01",
+      "BankName": "AU SMALL FINANCE BANK",
+      "AccountNo": 192837465012,
+      "SanctionLimit": 47827000.0,
+      "TotalCredits": 48803839.81,
+      "TotalDebits": 48284326.0,
+      "PeakODBalance": 48431534.26,
+      "InterestPaid": 0.0,
+      "NoOfDebits": 380,
+      "NoOfCredits": 82,
+      "InwardBounces": 2,
+      "OutwardBounces": 3,
+      "Balance_1st": 48432232.16,
+      "Balance_5th": 50637935.45,
+      "Balance_7th": 49606181.75,
+      "Balance_15th": 51587595.73,
+      "Balance_20th": 54912985.52,
+      "Balance_25th": 52034365.69
+    },
+    {
+      "CompanyKey": 1,
+      "MonthStart": "2025-05-01",
+      "BankName": "AU SMALL FINANCE BANK",
+      "AccountNo": 192837465012,
+      "SanctionLimit": 47827000.0,
+      "TotalCredits": 35086576.97,
+      "TotalDebits": 35047514.0,
+      "PeakODBalance": 48010432.4,
+      "InterestPaid": 0.0,
+      "NoOfDebits": 306,
+      "NoOfCredits": 75,
+      "InwardBounces": 2,
+      "OutwardBounces": 21,
+      "Balance_1st": 48974399.77,
+      "Balance_5th": 49295549.63,
+      "Balance_7th": 48586293.4,
+      "Balance_15th": 49174544.05,
+      "Balance_20th": 57182726.76,
+      "Balance_25th": 54564294.4
+    },
+    {
+      "CompanyKey": 1,
+      "MonthStart": "2025-06-01",
+      "BankName": "AU SMALL FINANCE BANK",
+      "AccountNo": 192837465012,
+      "SanctionLimit": 47827000.0,
+      "TotalCredits": 3538025.81,
+      "TotalDebits": 52393028.74,
+      "PeakODBalance": 0.0,
+      "InterestPaid": 0.0,
+      "NoOfDebits": 25,
+      "NoOfCredits": 13,
+      "InwardBounces": 4,
+      "OutwardBounces": 9,
+      "Balance_1st": 48972927.93,
+      "Balance_5th": 50165947.55,
+      "Balance_7th": 50222787.55,
+      "Balance_15th": 0.0,
+      "Balance_20th": 0.0,
+      "Balance_25th": 0.0
+    }
+  ],
+  "gst": [
+    {
+      "CompanyKey": 1,
+      "MonthStart": "2025-01-01",
+      "GSTIN": "37ABZPV8982E1ZF",
+      "TaxableSales": 25576282.01
+    },
+    {
+      "CompanyKey": 1,
+      "MonthStart": "2025-02-01",
+      "GSTIN": "37ABZPV8982E1ZF",
+      "TaxableSales": 21844752.36
+    },
+    {
+      "CompanyKey": 1,
+      "MonthStart": "2025-03-01",
+      "GSTIN": "37ABZPV8982E1ZF",
+      "TaxableSales": 65817006.74
+    },
+    {
+      "CompanyKey": 1,
+      "MonthStart": "2024-04-01",
+      "GSTIN": "37ABZPV8982E1ZF",
+      "TaxableSales": 17481398.31
+    },
+    {
+      "CompanyKey": 1,
+      "MonthStart": "2025-04-01",
+      "GSTIN": "37ABZPV8982E1ZF",
+      "TaxableSales": 4631648.73
+    },
+    {
+      "CompanyKey": 1,
+      "MonthStart": "2024-05-01",
+      "GSTIN": "37ABZPV8982E1ZF",
+      "TaxableSales": 29661529.43
+    },
+    {
+      "CompanyKey": 1,
+      "MonthStart": "2025-05-01",
+      "GSTIN": "37ABZPV8982E1ZF",
+      "TaxableSales": 26744981.25
+    },
+    {
+      "CompanyKey": 1,
+      "MonthStart": "2024-06-01",
+      "GSTIN": "37ABZPV8982E1ZF",
+      "TaxableSales": 36279782.08
+    },
+    {
+      "CompanyKey": 1,
+      "MonthStart": "2025-06-01",
+      "GSTIN": "37ABZPV8982E1ZF",
+      "TaxableSales": 37515105.67
+    },
+    {
+      "CompanyKey": 1,
+      "MonthStart": "2024-07-01",
+      "GSTIN": "37ABZPV8982E1ZF",
+      "TaxableSales": 27261014.54
+    },
+    {
+      "CompanyKey": 1,
+      "MonthStart": "2024-08-01",
+      "GSTIN": "37ABZPV8982E1ZF",
+      "TaxableSales": 29777478.88
+    },
+    {
+      "CompanyKey": 1,
+      "MonthStart": "2024-09-01",
+      "GSTIN": "37ABZPV8982E1ZF",
+      "TaxableSales": 19255490.49
+    },
+    {
+      "CompanyKey": 1,
+      "MonthStart": "2024-10-01",
+      "GSTIN": "37ABZPV8982E1ZF",
+      "TaxableSales": 33237468.49
+    },
+    {
+      "CompanyKey": 1,
+      "MonthStart": "2024-11-01",
+      "GSTIN": "37ABZPV8982E1ZF",
+      "TaxableSales": 18657662.74
+    },
+    {
+      "CompanyKey": 1,
+      "MonthStart": "2024-12-01",
+      "GSTIN": "37ABZPV8982E1ZF",
+      "TaxableSales": 23607560.63
+    }
+  ],
+  "alerts": [
+    {
+      "CompanyKey": 1,
+      "TxDate": "2024-04-10",
+      "Amount": 36000.0,
+      "Narration": "N101242272434011-VANNE SAROJA-CNRB0013582 N101242272434011",
+      "AlertType": "Proprietor Transfer",
+      "RiskLevel": "High"
+    },
+    {
+      "CompanyKey": 1,
+      "TxDate": "2024-04-10",
+      "Amount": 5000.0,
+      "Narration": "N101242272434015-VANNE SAROJA-CNRB0013582 N101242272434015",
+      "AlertType": "Proprietor Transfer",
+      "RiskLevel": "High"
+    },
+    {
+      "CompanyKey": 1,
+      "TxDate": "2024-06-08",
+      "Amount": 570000.0,
+      "Narration": "AUBLR22024060804326326-V KOTESWARA RAO AUBLR22024060804326326",
+      "AlertType": "Proprietor Transfer",
+      "RiskLevel": "High"
+    },
+    {
+      "CompanyKey": 1,
+      "TxDate": "2024-06-10",
+      "Amount": 36000.0,
+      "Narration": "N162242167132010-VANNE SAROJA-CNRB0013582 N162242167132010",
+      "AlertType": "Proprietor Transfer",
+      "RiskLevel": "High"
+    },
+    {
+      "CompanyKey": 1,
+      "TxDate": "2024-06-10",
+      "Amount": 5000.0,
+      "Narration": "N162242167134004-VANNE SAROJA-CNRB0013582 N162242167134004",
+      "AlertType": "Proprietor Transfer",
+      "RiskLevel": "High"
+    },
+    {
+      "CompanyKey": 1,
+      "TxDate": "2024-06-10",
+      "Amount": 50000.0,
+      "Narration": "N162242167138010-VANNE KALYAN-YESB0000046 N162242167138010",
+      "AlertType": "Proprietor Transfer",
+      "RiskLevel": "High"
+    },
+    {
+      "CompanyKey": 1,
+      "TxDate": "2024-06-10",
+      "Amount": 50000.0,
+      "Narration": "N162242167140014-VANNE VINITHRRA-YESB0000046 N162242167140014",
+      "AlertType": "Proprietor Transfer",
+      "RiskLevel": "High"
+    },
+    {
+      "CompanyKey": 1,
+      "TxDate": "2024-06-28",
+      "Amount": 50000.0,
+      "Narration": "N180242144516005-VANNE KOTESWARA RAO-SBIN0000952 N180242144516005",
+      "AlertType": "Proprietor Transfer",
+      "RiskLevel": "High"
+    },
+    {
+      "CompanyKey": 1,
+      "TxDate": "2024-07-04",
+      "Amount": 50000.0,
+      "Narration": "N186242257398002-V KOTESWARA RAO-HDFC0000050 N186242257398002",
+      "AlertType": "Proprietor Transfer",
+      "RiskLevel": "High"
+    },
+    {
+      "CompanyKey": 1,
+      "TxDate": "2024-07-08",
+      "Amount": 150000.0,
+      "Narration": "N190242149032009-VANNE KOTESWARA RAO-SBIN0000952 N190242149032009",
+      "AlertType": "Proprietor Transfer",
+      "RiskLevel": "High"
+    },
+    {
+      "CompanyKey": 1,
+      "TxDate": "2024-07-09",
+      "Amount": 50000.0,
+      "Narration": "N191242269739002-VANNE VINITHRRA-YESB0000046 N191242269739002",
+      "AlertType": "Proprietor Transfer",
+      "RiskLevel": "High"
+    },
+    {
+      "CompanyKey": 1,
+      "TxDate": "2024-07-09",
+      "Amount": 50000.0,
+      "Narration": "N191242269741004-VANNE KALYAN-YESB0000046 N191242269741004",
+      "AlertType": "Proprietor Transfer",
+      "RiskLevel": "High"
+    },
+    {
+      "CompanyKey": 1,
+      "TxDate": "2024-07-10",
+      "Amount": 40000.0,
+      "Narration": "N192242241279002-V KOTESWARA RAO-HDFC0000050 N192242241279002",
+      "AlertType": "Proprietor Transfer",
+      "RiskLevel": "High"
+    },
+    {
+      "CompanyKey": 1,
+      "TxDate": "2024-07-10",
+      "Amount": 130000.0,
+      "Narration": "N192242141280004-V KOTESWARA RAO-HDFC0000050 N192242141280004",
+      "AlertType": "Proprietor Transfer",
+      "RiskLevel": "High"
+    },
+    {
+      "CompanyKey": 1,
+      "TxDate": "2024-07-10",
+      "Amount": 36000.0,
+      "Narration": "N192242265948005-VANNE SAROJA-CNRB0013582 N192242265948005",
+      "AlertType": "Proprietor Transfer",
+      "RiskLevel": "High"
+    },
+    {
+      "CompanyKey": 1,
+      "TxDate": "2024-07-10",
+      "Amount": 5000.0,
+      "Narration": "N192242265949005-VANNE SAROJA-CNRB0013582 N192242265949005",
+      "AlertType": "Proprietor Transfer",
+      "RiskLevel": "High"
+    },
+    {
+      "CompanyKey": 1,
+      "TxDate": "2024-07-29",
+      "Amount": 300000.0,
+      "Narration": "AUBLR22024072904589153-VANNE KOTESWARA RAO AUBLR22024072904589153",
+      "AlertType": "Proprietor Transfer",
+      "RiskLevel": "High"
+    },
+    {
+      "CompanyKey": 1,
+      "TxDate": "2024-08-10",
+      "Amount": 50000.0,
+      "Narration": "N223242166987003-VANNE VINITHRRA-YESB0000046 N223242166987003",
+      "AlertType": "Proprietor Transfer",
+      "RiskLevel": "High"
+    },
+    {
+      "CompanyKey": 1,
+      "TxDate": "2024-08-10",
+      "Amount": 50000.0,
+      "Narration": "N223242266988005-VANNE KALYAN-YESB0000046 N223242266988005",
+      "AlertType": "Proprietor Transfer",
+      "RiskLevel": "High"
+    },
+    {
+      "CompanyKey": 1,
+      "TxDate": "2024-08-10",
+      "Amount": 36000.0,
+      "Narration": "N223242166991001-VANNE SAROJA-CNRB0013582 N223242166991001",
+      "AlertType": "Proprietor Transfer",
+      "RiskLevel": "High"
+    },
+    {
+      "CompanyKey": 1,
+      "TxDate": "2024-08-10",
+      "Amount": 5000.0,
+      "Narration": "N223242166992002-VANNE SAROJA-CNRB0013582 N223242166992002",
+      "AlertType": "Proprietor Transfer",
+      "RiskLevel": "High"
+    },
+    {
+      "CompanyKey": 1,
+      "TxDate": "2024-09-09",
+      "Amount": 50000.0,
+      "Narration": "N253242271191003-VANNE VINITHRRA-YESB0000046 N253242271191003",
+      "AlertType": "Proprietor Transfer",
+      "RiskLevel": "High"
+    },
+    {
+      "CompanyKey": 1,
+      "TxDate": "2024-09-09",
+      "Amount": 50000.0,
+      "Narration": "N253242271192007-VANNE KALYAN-YESB0000046 N253242271192007",
+      "AlertType": "Proprietor Transfer",
+      "RiskLevel": "High"
+    },
+    {
+      "CompanyKey": 1,
+      "TxDate": "2024-09-10",
+      "Amount": 36000.0,
+      "Narration": "N254242170613004-VANNE SAROJA-CNRB0013582 N254242170613004",
+      "AlertType": "Proprietor Transfer",
+      "RiskLevel": "High"
+    },
+    {
+      "CompanyKey": 1,
+      "TxDate": "2024-09-10",
+      "Amount": 5000.0,
+      "Narration": "N254242270613002-VANNE SAROJA-CNRB0013582 N254242270613002",
+      "AlertType": "Proprietor Transfer",
+      "RiskLevel": "High"
+    },
+    {
+      "CompanyKey": 1,
+      "TxDate": "2024-10-04",
+      "Amount": 200000.0,
+      "Narration": "AUBLR22024100404941095-V KOTESWARA RAO AUBLR22024100404941095",
+      "AlertType": "Proprietor Transfer",
+      "RiskLevel": "High"
+    },
+    {
+      "CompanyKey": 1,
+      "TxDate": "2024-10-09",
+      "Amount": 50000.0,
+      "Narration": "N283242268192001-VANNE VINITHRRA-YESB0000046 N283242268192001",
+      "AlertType": "Proprietor Transfer",
+      "RiskLevel": "High"
+    },
+    {
+      "CompanyKey": 1,
+      "TxDate": "2024-10-09",
+      "Amount": 50000.0,
+      "Narration": "N283242168195001-VANNE KALYAN-YESB0000046 N283242168195001",
+      "AlertType": "Proprietor Transfer",
+      "RiskLevel": "High"
+    },
+    {
+      "CompanyKey": 1,
+      "TxDate": "2024-11-11",
+      "Amount": 36000.0,
+      "Narration": "N316242257421001-VANNE SAROJA-CNRB0013582 N316242257421001",
+      "AlertType": "Proprietor Transfer",
+      "RiskLevel": "High"
+    },
+    {
+      "CompanyKey": 1,
+      "TxDate": "2024-11-11",
+      "Amount": 5000.0,
+      "Narration": "N316242157423001-VANNE SAROJA-CNRB0013582 N316242157423001",
+      "AlertType": "Proprietor Transfer",
+      "RiskLevel": "High"
+    },
+    {
+      "CompanyKey": 1,
+      "TxDate": "2024-11-11",
+      "Amount": 50000.0,
+      "Narration": "N316242157425001-VANNE VINITHRRA-YESB0000046 N316242157425001",
+      "AlertType": "Proprietor Transfer",
+      "RiskLevel": "High"
+    },
+    {
+      "CompanyKey": 1,
+      "TxDate": "2024-11-11",
+      "Amount": 50000.0,
+      "Narration": "N316242157426001-VANNE KALYAN-YESB0000046 N316242157426001",
+      "AlertType": "Proprietor Transfer",
+      "RiskLevel": "High"
+    },
+    {
+      "CompanyKey": 1,
+      "TxDate": "2024-11-21",
+      "Amount": 1200000.0,
+      "Narration": "AUBLR22024112105080864-V KOTESWARA RAO-HDFC0000050 AUBLR22024112105080864",
+      "AlertType": "Proprietor Transfer",
+      "RiskLevel": "High"
+    },
+    {
+      "CompanyKey": 1,
+      "TxDate": "2024-12-09",
+      "Amount": 50000.0,
+      "Narration": "N344242256474002-VANNE KALYAN-YESB0000046-CHILDREN N344242256474002",
+      "AlertType": "Proprietor Transfer",
+      "RiskLevel": "High"
+    },
+    {
+      "CompanyKey": 1,
+      "TxDate": "2024-12-09",
+      "Amount": 50000.0,
+      "Narration": "N344242156475001-VANNE VINITHRRA-YESB0000046-CHILDREN N344242156475001",
+      "AlertType": "Proprietor Transfer",
+      "RiskLevel": "High"
+    },
+    {
+      "CompanyKey": 1,
+      "TxDate": "2025-01-04",
+      "Amount": 340000.0,
+      "Narration": "AUBLR62025010410922416 -V KOTESWARA RAO -HDFC0000050 AUBLR62025010410922416",
+      "AlertType": "Proprietor Transfer",
+      "RiskLevel": "High"
+    },
+    {
+      "CompanyKey": 1,
+      "TxDate": "2025-02-03",
+      "Amount": 225000.0,
+      "Narration": "AUBLR62025020311405145 -V KOTESWARA RAO -HDFC0000050 AUBLR62025020311405145",
+      "AlertType": "Proprietor Transfer",
+      "RiskLevel": "High"
+    },
+    {
+      "CompanyKey": 1,
+      "TxDate": "2025-02-14",
+      "Amount": 772000.0,
+      "Narration": "AUBLR62025021411579220 -V KOTESWARA RAO -HDFC0000050 AUBLR62025021411579220",
+      "AlertType": "Proprietor Transfer",
+      "RiskLevel": "High"
+    },
+    {
+      "CompanyKey": 1,
+      "TxDate": "2025-02-24",
+      "Amount": 600000.0,
+      "Narration": "AUBLR62025022411739858 -V KOTESWARA RAO -HDFC0000050 AUBLR62025022411739858",
+      "AlertType": "Proprietor Transfer",
+      "RiskLevel": "High"
+    },
+    {
+      "CompanyKey": 1,
+      "TxDate": "2025-03-07",
+      "Amount": 1200000.0,
+      "Narration": "AUBLR62025030711949909 -V KOTESWARA RAO AUBLR62025030711949909",
+      "AlertType": "Proprietor Transfer",
+      "RiskLevel": "High"
+    },
+    {
+      "CompanyKey": 1,
+      "TxDate": "2025-03-08",
+      "Amount": 50000.0,
+      "Narration": "AUBLN62025030814522681-VANNE KALYAN-YESB0000046-LOANS AUBLN62025030814522681",
+      "AlertType": "Proprietor Transfer",
+      "RiskLevel": "High"
+    },
+    {
+      "CompanyKey": 1,
+      "TxDate": "2025-03-08",
+      "Amount": 50000.0,
+      "Narration": "AUBLN62025030814522999-VANNE VINITHRRA-YESB0000046-LOANS AUBLN62025030814522999",
+      "AlertType": "Proprietor Transfer",
+      "RiskLevel": "High"
+    },
+    {
+      "CompanyKey": 1,
+      "TxDate": "2025-03-17",
+      "Amount": 1350000.0,
+      "Narration": "AUBLR62025031712087440 -VANNE KOTESWARA RAO AUBLR62025031712087440",
+      "AlertType": "Proprietor Transfer",
+      "RiskLevel": "High"
+    },
+    {
+      "CompanyKey": 1,
+      "TxDate": "2025-03-17",
+      "Amount": 590000.0,
+      "Narration": "AUBLR62025031712087441 -VANNE KOTESWARA RAO AUBLR62025031712087441",
+      "AlertType": "Proprietor Transfer",
+      "RiskLevel": "High"
+    },
+    {
+      "CompanyKey": 1,
+      "TxDate": "2025-03-20",
+      "Amount": 1900000.0,
+      "Narration": "AUBLR62025032012151017 -V KOTESWARA RAO -HDFC0000050 AUBLR62025032012151017",
+      "AlertType": "Proprietor Transfer",
+      "RiskLevel": "High"
+    },
+    {
+      "CompanyKey": 1,
+      "TxDate": "2025-03-28",
+      "Amount": 1400000.0,
+      "Narration": "AUBLR62025032812331867 -V KOTESWARA RAO -HDFC0000050 AUBLR62025032812331867",
+      "AlertType": "Proprietor Transfer",
+      "RiskLevel": "High"
+    },
+    {
+      "CompanyKey": 1,
+      "TxDate": "2025-03-28",
+      "Amount": 200000.0,
+      "Narration": "AUBLR62025032812353273 -VANNE KOTESWARA RAO -SBIN0000952 AUBLR62025032812353273",
+      "AlertType": "Proprietor Transfer",
+      "RiskLevel": "High"
+    },
+    {
+      "CompanyKey": 1,
+      "TxDate": "2025-04-09",
+      "Amount": 50000.0,
+      "Narration": "AUBLN62025040916577408-V KOTESWARA RAO-HDFC0000050 AUBLN62025040916577408",
+      "AlertType": "Proprietor Transfer",
+      "RiskLevel": "High"
+    },
+    {
+      "CompanyKey": 1,
+      "TxDate": "2025-04-09",
+      "Amount": 80000.0,
+      "Narration": "AUBLN62025040916582625-V KOTESWARA RAO-HDFC0000050 AUBLN62025040916582625",
+      "AlertType": "Proprietor Transfer",
+      "RiskLevel": "High"
+    },
+    {
+      "CompanyKey": 1,
+      "TxDate": "2025-04-10",
+      "Amount": 50000.0,
+      "Narration": "AUBLN62025041016671598-VANNE KALYAN-YESB0000046-LOANS AUBLN62025041016671598",
+      "AlertType": "Proprietor Transfer",
+      "RiskLevel": "High"
+    },
+    {
+      "CompanyKey": 1,
+      "TxDate": "2025-04-10",
+      "Amount": 50000.0,
+      "Narration": "AUBLN62025041016672123-VANNE VINITHRRA-YESB0000046-LOANS AUBLN62025041016672123",
+      "AlertType": "Proprietor Transfer",
+      "RiskLevel": "High"
+    },
+    {
+      "CompanyKey": 1,
+      "TxDate": "2025-04-11",
+      "Amount": 700000.0,
+      "Narration": "AUBLR62025041115055633 -V KOTESWARA RAO -HDFC0000050 AUBLR62025041115055633",
+      "AlertType": "Proprietor Transfer",
+      "RiskLevel": "High"
+    },
+    {
+      "CompanyKey": 1,
+      "TxDate": "2025-04-12",
+      "Amount": 450000.0,
+      "Narration": "AUBLR62025041215070566 -V KOTESWARA RAO -HDFC0000050 AUBLR62025041215070566",
+      "AlertType": "Proprietor Transfer",
+      "RiskLevel": "High"
+    },
+    {
+      "CompanyKey": 1,
+      "TxDate": "2025-04-12",
+      "Amount": 1305000.0,
+      "Narration": "AUBLR62025041215070567 -V KOTESWARA RAO -HDFC0000050 AUBLR62025041215070567",
+      "AlertType": "Proprietor Transfer",
+      "RiskLevel": "High"
+    },
+    {
+      "CompanyKey": 1,
+      "TxDate": "2025-04-16",
+      "Amount": 55000.0,
+      "Narration": "AUBLN62025041616953930-V KOTESWARA RAO-HDFC0000050 AUBLN62025041616953930",
+      "AlertType": "Proprietor Transfer",
+      "RiskLevel": "High"
+    },
+    {
+      "CompanyKey": 1,
+      "TxDate": "2025-04-28",
+      "Amount": 200000.0,
+      "Narration": "AUBLR62025042815335460 -VANNE KOTESWARA RAO -SBIN0000952 AUBLR62025042815335460",
+      "AlertType": "Proprietor Transfer",
+      "RiskLevel": "High"
+    },
+    {
+      "CompanyKey": 1,
+      "TxDate": "2025-04-29",
+      "Amount": 300000.0,
+      "Narration": "AUBLR62025042915367554 -VANNE KOTESWARA RAO -SBIN0000952 AUBLR62025042915367554",
+      "AlertType": "Proprietor Transfer",
+      "RiskLevel": "High"
+    },
+    {
+      "CompanyKey": 1,
+      "TxDate": "2025-04-29",
+      "Amount": 350000.0,
+      "Narration": "AUBLR62025042915377647 -VANNE KOTESWARA RAO -SBIN0000952 AUBLR62025042915377647",
+      "AlertType": "Proprietor Transfer",
+      "RiskLevel": "High"
+    },
+    {
+      "CompanyKey": 1,
+      "TxDate": "2025-04-30",
+      "Amount": 700000.0,
+      "Narration": "AUBLR62025043015409916 -VANNE KOTESWARA RAO -SBIN0000952 AUBLR62025043015409916",
+      "AlertType": "Proprietor Transfer",
+      "RiskLevel": "High"
+    },
+    {
+      "CompanyKey": 1,
+      "TxDate": "2025-05-06",
+      "Amount": 1000000.0,
+      "Narration": "AUBLR62025050615511911 -V KOTESWARA RAO -HDFC0000050 AUBLR62025050615511911",
+      "AlertType": "Proprietor Transfer",
+      "RiskLevel": "High"
+    },
+    {
+      "CompanyKey": 1,
+      "TxDate": "2025-05-09",
+      "Amount": 670000.0,
+      "Narration": "AUBLR62025050915566756 -V KOTESWARA RAO -HDFC0000050 AUBLR62025050915566756",
+      "AlertType": "Proprietor Transfer",
+      "RiskLevel": "High"
+    },
+    {
+      "CompanyKey": 1,
+      "TxDate": "2025-05-10",
+      "Amount": 50000.0,
+      "Narration": "AUBLN62025051018401757-VANNE VINITHRRA-YESB0000046-LOANS AUBLN62025051018401757",
+      "AlertType": "Proprietor Transfer",
+      "RiskLevel": "High"
+    },
+    {
+      "CompanyKey": 1,
+      "TxDate": "2025-05-10",
+      "Amount": 50000.0,
+      "Narration": "AUBLN62025051018401759-VANNE KALYAN-YESB0000046-LOANS AUBLN62025051018401759",
+      "AlertType": "Proprietor Transfer",
+      "RiskLevel": "High"
+    },
+    {
+      "CompanyKey": 1,
+      "TxDate": "2025-05-19",
+      "Amount": 1250000.0,
+      "Narration": "RTGS DR-AUBLR62025051915800223 -V KOTESWARA RAO -HDFC0000050 AUBLR62025051915800223",
+      "AlertType": "Proprietor Transfer",
+      "RiskLevel": "High"
+    }
+  ],
+  "partners": [
+    {
+      "Type": "Client",
+      "Name": "AXIS BANK LOAN AMOUNT UTIBR52025031700072520",
+      "Amount": 47826776.0
+    },
+    {
+      "Type": "Client",
+      "Name": "AXIS BANK LOAN AMOUNT UTIBN62025031799049234",
+      "Amount": 43018299.0
+    },
+    {
+      "Type": "Client",
+      "Name": "SRI KALKI BHAGAVAN TRANSPORT - AU BANK - CA",
+      "Amount": 35000000.0
+    },
+    {
+      "Type": "Supplier",
+      "Name": "DRAWDOWN FROM CASA -HARIKA SHIPPING AND",
+      "Amount": 42912299.02
+    },
+    {
+      "Type": "Supplier",
+      "Name": "FT - DR - - SRI KALKI BHAGAVAN TRANSPORT",
+      "Amount": 32500000.0
+    },
+    {
+      "Type": "Supplier",
+      "Name": "FT - DR - - SRI KALKI BHAGAVAN TRANSPORT - AU BANK CA000000000350",
+      "Amount": 25000000.0
+    }
+  ]
+}
+    </script>
+
+    <script>
+        // Switch tabs
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            // Find clicked button
+            const clickedBtn = Array.from(document.querySelectorAll('.tab-btn')).find(btn => btn.innerText.toLowerCase().includes(tabId === 'scorecard' ? 'scorecard' : 'banking'));
+            if (clickedBtn) clickedBtn.classList.add('active');
+            
+            document.getElementById(tabId).classList.add('active');
+        }
+
+        // Format Currency
+        function formatRupees(value) {
+            return new Intl.NumberFormat('en-IN', {
+                style: 'currency',
+                currency: 'INR',
+                maximumFractionDigits: 0
+            }).format(value);
+        }
+
+        function formatLakhs(value) {
+            return (value / 100000).toFixed(2) + ' L';
+        }
+
+        function formatCrores(value) {
+            return (value / 10000000).toFixed(2) + ' Cr';
+        }
+
+        // Load data
+        const rawPayload = JSON.parse(document.getElementById('raw-payload').textContent);
+        const financials = rawPayload.financials;
+        const banking = rawPayload.banking;
+        const gst = rawPayload.gst;
+        const alerts = rawPayload.alerts;
+        const partners = rawPayload.partners || [];
+        
+        // Find actual audited year (FY24)
+        const fy24 = financials.find(f => f.FinancialYear === 'FY24') || financials[financials.length - 1];
+        
+        // Populate Page 1 KPIs
+        document.getElementById('kpi-turnover').innerText = formatCrores(fy24.Sales);
+        document.getElementById('kpi-pat').innerText = formatLakhs(fy24.PAT) + ' PAT';
+        const sales_total_fy24 = fy24.Sales + (fy24.OtherIncome || 0);
+        const netProfitMargin = sales_total_fy24 > 0 ? (fy24.PAT / sales_total_fy24) * 100 : 0;
+        document.getElementById('kpi-margin').innerText = netProfitMargin.toFixed(2) + '%';
+        
+        const currentRatio = fy24.CurrentAssets / ((fy24.CurrentLiabilities || 0) + (fy24.WorkingCapitalLimits || 0));
+        document.getElementById('kpi-curr-ratio').innerText = currentRatio.toFixed(2);
+        
+        const leverage = ((fy24.SecuredLoans || 0) + (fy24.WorkingCapitalLimits || 0) + (fy24.Creditors || 0)) / (fy24.NetWorth || 1);
+        document.getElementById('kpi-leverage').innerText = leverage.toFixed(2);
+        
+        // Populate 3-Year Balance Sheet and Ratios Tables
+        financials.forEach(f => {
+            const fy = f.FinancialYear.toUpperCase(); // 'FY22', 'FY23', 'FY24'
+            const suffix = fy === 'FY22' ? 'fy22' : (fy === 'FY23' ? 'fy23' : 'fy24');
+            
+            // Balance Sheet Items (in Lakhs)
+            const cap = (f.ShareCapital || 0) / 100000;
+            const res = (f.Reserves || 0) / 100000;
+            const nw = (f.NetWorth || 0) / 100000;
+            const loans = (f.SecuredLoans || 0) / 100000;
+            const od = (f.WorkingCapitalLimits || 0) / 100000;
+            const ca = (f.CurrentAssets || 0) / 100000;
+            const cl = (f.CurrentLiabilities || 0) / 100000;
+            
+            const elCap = document.getElementById(`bs-capital-${suffix}`);
+            const elRes = document.getElementById(`bs-reserves-${suffix}`);
+            const elTnw = document.getElementById(`bs-tnw-${suffix}`);
+            const elLoans = document.getElementById(`bs-loans-${suffix}`);
+            const elOd = document.getElementById(`bs-od-${suffix}`);
+            const elCa = document.getElementById(`bs-ca-${suffix}`);
+            const elCl = document.getElementById(`bs-cl-${suffix}`);
+            
+            if (elCap) { elCap.innerText = cap.toFixed(2); }
+            if (elRes) { elRes.innerText = res.toFixed(2); }
+            if (elTnw) { elTnw.innerText = nw.toFixed(2); }
+            if (elLoans) { elLoans.innerText = loans.toFixed(2); }
+            if (elOd) { elOd.innerText = od.toFixed(2); }
+            if (elCa) { elCa.innerText = ca.toFixed(2); }
+            if (elCl) { elCl.innerText = cl.toFixed(2); }
+            
+            // Ratios
+            const sales_total = (f.Sales || 0) + (f.OtherIncome || 0);
+            const gp = sales_total - ((f.Purchases || 0) + (f.DirectExpenses || 0));
+            const gp_margin = sales_total > 0 ? (gp / sales_total) * 100 : 0;
+            const np_margin = sales_total > 0 ? ((f.PAT || 0) / sales_total) * 100 : 0;
+            
+            const ebitda = (f.PAT || 0) + (f.InterestPaid || 0) + (f.Depreciation || 0);
+            const ebitda_margin = sales_total > 0 ? (ebitda / sales_total) * 100 : 0;
+            
+            const debt = (f.SecuredLoans || 0) + (f.WorkingCapitalLimits || 0);
+            const de = (f.NetWorth || 0) > 0 ? debt / f.NetWorth : 0;
+            const lev = (f.NetWorth || 0) > 0 ? (debt + (f.Creditors || 0)) / f.NetWorth : 0;
+            const ic = (f.InterestPaid || 0) > 0 ? ebitda / f.InterestPaid : 0;
+            const curr = ((f.CurrentLiabilities || 0) + (f.WorkingCapitalLimits || 0)) > 0 ? f.CurrentAssets / ((f.CurrentLiabilities || 0) + (f.WorkingCapitalLimits || 0)) : 0;
+            
+            // Working capital days
+            const d_days = f.Sales > 0 ? ((f.Debtors || 0) / f.Sales) * 365 : 0;
+            const cos = (f.Purchases || 0) + (f.DirectExpenses || 0);
+            const s_days = cos > 0 ? ((f.Inventory || 0) / cos) * 365 : 0;
+            const c_days = cos > 0 ? ((f.Creditors || 0) / cos) * 365 : 0;
+            const wc = d_days + s_days - c_days;
+            
+            const elGp = document.getElementById(`ratio-gp-${suffix}`);
+            const elNp = document.getElementById(`ratio-np-${suffix}`);
+            const elEbitda = document.getElementById(`ratio-ebitda-${suffix}`);
+            const elDe = document.getElementById(`ratio-de-${suffix}`);
+            const elLev = document.getElementById(`ratio-lev-${suffix}`);
+            const elIc = document.getElementById(`ratio-ic-${suffix}`);
+            const elCurr = document.getElementById(`ratio-curr-${suffix}`);
+            const elWc = document.getElementById(`ratio-wc-${suffix}`);
+            
+            if (elGp) { elGp.innerText = gp_margin.toFixed(2) + '%'; }
+            if (elNp) { elNp.innerText = np_margin.toFixed(2) + '%'; }
+            if (elEbitda) { elEbitda.innerText = ebitda_margin.toFixed(2) + '%'; }
+            if (elDe) { elDe.innerText = de.toFixed(2); }
+            if (elLev) { elLev.innerText = lev.toFixed(2); }
+            if (elIc) { elIc.innerText = ic.toFixed(2); }
+            if (elCurr) { elCurr.innerText = curr.toFixed(2); }
+            if (elWc) { elWc.innerText = wc.toFixed(1); }
+        });
+        
+        // Calculated ratios for gauges
+        const debtorsDays = fy24.Sales > 0 ? ((fy24.Debtors || 0) / fy24.Sales) * 365 : 0;
+        const purchaseDenominator = (fy24.Purchases || 0) + (fy24.DirectExpenses || 0);
+        const creditorsDays = purchaseDenominator > 0 ? ((fy24.Creditors || 0) / purchaseDenominator) * 365 : 0;
+        const inventoryDays = purchaseDenominator > 0 ? ((fy24.Inventory || 0) / purchaseDenominator) * 365 : 0;
+        const wcCycle = debtorsDays + inventoryDays - creditorsDays;
+        
+        document.getElementById('val-debtors').innerText = debtorsDays.toFixed(1) + ' Days';
+        document.getElementById('val-creditors').innerText = creditorsDays.toFixed(1) + ' Days';
+        document.getElementById('val-inventory').innerText = inventoryDays.toFixed(1) + ' Days';
+        document.getElementById('val-wcc').innerText = wcCycle.toFixed(1) + ' Days';
+
+        // Page 2 KPIs
+        const totalCredits = banking.reduce((sum, item) => sum + item.TotalCredits, 0);
+        document.getElementById('kpi-bank-credits').innerText = formatCrores(totalCredits);
+        document.getElementById('kpi-bank-months').innerText = banking.length + ' Months';
+        
+        // BTO
+        const bto = totalCredits / fy24.Sales;
+        document.getElementById('kpi-bto').innerText = bto.toFixed(2) + 'x';
+        const trendBto = document.getElementById('trend-bto');
+        if (bto < 0.90 || bto > 1.10) {
+            trendBto.innerHTML = '<span class="red-theme"><i class="fa-solid fa-triangle-exclamation"></i> Outside Ideal Range (0.90 - 1.10)</span>';
+        } else {
+            trendBto.innerHTML = '<span class="green-theme"><i class="fa-solid fa-check"></i> Within Ideal Range</span>';
+        }
+        
+        // Bounces
+        const bounces = banking.reduce((sum, item) => sum + item.InwardBounces + item.OutwardBounces, 0);
+        document.getElementById('kpi-bounces').innerText = bounces;
+        const trendBounces = document.getElementById('trend-bounces');
+        if (bounces > 5) {
+            trendBounces.innerHTML = '<span class="red-theme"><i class="fa-solid fa-arrow-trend-up"></i> High Bounce Vol (Liquidity Strain)</span>';
+        } else {
+            trendBounces.innerHTML = '<span class="green-theme"><i class="fa-solid fa-circle-check"></i> Normal Returns</span>';
+        }
+        
+        // Alerts
+        document.getElementById('kpi-alerts-count').innerText = alerts.length;
+        
+        // Charts config
+        // Chart 1: Sales vs PAT Trend
+        new Chart(document.getElementById('turnoverChart').getContext('2d'), {
+            type: 'bar',
+            data: {
+                labels: financials.map(f => f.FinancialYear),
+                datasets: [
+                    {
+                        label: 'Total Turnover (INR)',
+                        data: financials.map(f => f.Sales),
+                        backgroundColor: 'rgba(59, 130, 246, 0.45)',
+                        borderColor: '#3b82f6',
+                        borderWidth: 1.5,
+                        borderRadius: 4,
+                        yAxisID: 'y'
+                    },
+                    {
+                        label: 'Net Profit (PAT) (INR)',
+                        data: financials.map(f => f.PAT),
+                        type: 'line',
+                        borderColor: '#10b981',
+                        borderWidth: 3,
+                        pointBackgroundColor: '#10b981',
+                        yAxisID: 'y1'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { labels: { color: '#9ca3af' } }
+                },
+                scales: {
+                    y: {
+                        type: 'linear',
+                        position: 'left',
+                        grid: { color: 'rgba(255, 255, 255, 0.03)' },
+                        ticks: { color: '#9ca3af', callback: v => formatLakhs(v) }
+                    },
+                    y1: {
+                        type: 'linear',
+                        position: 'right',
+                        grid: { drawOnChartArea: false },
+                        ticks: { color: '#9ca3af', callback: v => formatLakhs(v) }
+                    },
+                    x: {
+                        ticks: { color: '#9ca3af' }
+                    }
+                }
+            }
+        });
+
+        // Chart 2: Reserves and Net Worth
+        new Chart(document.getElementById('reservesChart').getContext('2d'), {
+            type: 'line',
+            data: {
+                labels: financials.map(f => f.FinancialYear),
+                datasets: [
+                    {
+                        label: 'Net Worth',
+                        data: financials.map(f => f.NetWorth),
+                        borderColor: '#10b981',
+                        backgroundColor: 'rgba(16, 185, 129, 0.05)',
+                        fill: true,
+                        borderWidth: 2,
+                        pointBackgroundColor: '#10b981'
+                    },
+                    {
+                        label: 'Reserves & Surplus',
+                        data: financials.map(f => f.Reserves),
+                        borderColor: '#3b82f6',
+                        backgroundColor: 'rgba(59, 130, 246, 0.05)',
+                        fill: true,
+                        borderWidth: 2,
+                        pointBackgroundColor: '#3b82f6'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { labels: { color: '#9ca3af' } }
+                },
+                scales: {
+                    y: {
+                        grid: { color: 'rgba(255, 255, 255, 0.03)' },
+                        ticks: { color: '#9ca3af', callback: v => formatLakhs(v) }
+                    },
+                    x: { ticks: { color: '#9ca3af' } }
+                }
+            }
+        });
+
+        // Working Capital Gauges (Doughnut charts)
+        function createGauge(id, val, target, color) {
+            new Chart(document.getElementById(id).getContext('2d'), {
+                type: 'doughnut',
+                data: {
+                    datasets: [{
+                        data: [val, Math.max(0, target - val)],
+                        backgroundColor: [color, 'rgba(255,255,255,0.03)'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '75%',
+                    plugins: { legend: { display: false } }
+                }
+            });
+        }
+        createGauge('gaugeDebtors', debtorsDays, 365, '#ef4444');
+        createGauge('gaugeCreditors', creditorsDays, 365, '#f59e0b');
+        createGauge('gaugeInventory', inventoryDays, 365, '#10b981');
+
+        // Page 2 Charts
+        // Chart 3: Monthly Credits vs Debits
+        new Chart(document.getElementById('monthlyFlowChart').getContext('2d'), {
+            type: 'bar',
+            data: {
+                labels: banking.map(b => b.MonthStart.substring(0, 7)),
+                datasets: [
+                    {
+                        label: 'Monthly Credits (Receipts)',
+                        data: banking.map(b => b.TotalCredits),
+                        backgroundColor: '#3b82f6',
+                        borderRadius: 4
+                    },
+                    {
+                        label: 'Monthly Debits (Payments)',
+                        data: banking.map(b => b.TotalDebits),
+                        backgroundColor: '#ef4444',
+                        borderRadius: 4
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { labels: { color: '#9ca3af' } }
+                },
+                scales: {
+                    y: {
+                        grid: { color: 'rgba(255, 255, 255, 0.03)' },
+                        ticks: { color: '#9ca3af', callback: v => formatLakhs(v) }
+                    },
+                    x: { ticks: { color: '#9ca3af' } }
+                }
+            }
+        });
+
+        // Chart 4: GST vs Bank Credits
+        new Chart(document.getElementById('gstVsBankChart').getContext('2d'), {
+            type: 'line',
+            data: {
+                labels: gst.map(g => g.MonthStart.substring(0, 7)),
+                datasets: [
+                    {
+                        label: 'GST Sales Declared',
+                        data: gst.map(g => g.TaxableSales),
+                        borderColor: '#f59e0b',
+                        borderWidth: 2.5,
+                        pointBackgroundColor: '#f59e0b',
+                        fill: false
+                    },
+                    {
+                        label: 'Bank Statement Credits',
+                        data: banking.map(b => b.TotalCredits),
+                        borderColor: '#3b82f6',
+                        borderWidth: 2.5,
+                        pointBackgroundColor: '#3b82f6',
+                        fill: false
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { labels: { color: '#9ca3af' } }
+                },
+                scales: {
+                    y: {
+                        grid: { color: 'rgba(255, 255, 255, 0.03)' },
+                        ticks: { color: '#9ca3af', callback: v => formatLakhs(v) }
+                    },
+                    x: { ticks: { color: '#9ca3af' } }
+                }
+            }
+        });
+
+        // Chart 5: Peak OD Limit Utilization
+        new Chart(document.getElementById('odUtilChart').getContext('2d'), {
+            type: 'line',
+            data: {
+                labels: banking.map(b => b.MonthStart.substring(0, 7)),
+                datasets: [{
+                    label: 'OD Peak Utilization (%)',
+                    data: banking.map(b => (Math.abs(b.PeakODBalance) / b.SanctionLimit) * 100),
+                    borderColor: '#ef4444',
+                    borderWidth: 3,
+                    pointBackgroundColor: '#ef4444',
+                    backgroundColor: 'rgba(239, 68, 68, 0.05)',
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { labels: { color: '#9ca3af' } }
+                },
+                scales: {
+                    y: {
+                        max: 120,
+                        grid: { color: 'rgba(255, 255, 255, 0.03)' },
+                        ticks: { color: '#9ca3af', callback: v => v.toFixed(0) + '%' }
+                    },
+                    x: { ticks: { color: '#9ca3af' } }
+                }
+            }
+        });
+
+        // Chart 6: Inward vs Outward Bounces Trend
+        new Chart(document.getElementById('bounceChart').getContext('2d'), {
+            type: 'bar',
+            data: {
+                labels: banking.map(b => b.MonthStart.substring(0, 7)),
+                datasets: [
+                    {
+                        label: 'Inward Bounces (Customer Returns)',
+                        data: banking.map(b => b.InwardBounces),
+                        backgroundColor: '#f59e0b',
+                        borderRadius: 3
+                    },
+                    {
+                        label: 'Outward Bounces (Proprietor Returns)',
+                        data: banking.map(b => b.OutwardBounces),
+                        backgroundColor: '#ef4444',
+                        borderRadius: 3
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { labels: { color: '#9ca3af' } }
+                },
+                scales: {
+                    y: {
+                        ticks: { color: '#9ca3af', stepSize: 1 },
+                        grid: { color: 'rgba(255, 255, 255, 0.03)' }
+                    },
+                    x: { ticks: { color: '#9ca3af' } }
+                }
+            }
+        });
+
+        // Populate Alerts Table
+        function filterAlerts() {
+            const riskFilter = document.getElementById('filter-risk').value;
+            const typeFilter = document.getElementById('filter-type').value;
+            const tbody = document.getElementById('alerts-table-body');
+            tbody.innerHTML = '';
+            
+            alerts.forEach(tx => {
+                if (riskFilter !== 'all' && tx.RiskLevel !== riskFilter) return;
+                if (typeFilter !== 'all' && tx.AlertType !== typeFilter) return;
+                
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${tx.TxDate}</td>
+                    <td style="font-weight: 600;">${formatRupees(tx.Amount)}</td>
+                    <td style="color: var(--text-secondary); font-size: 0.85rem;">${tx.Narration}</td>
+                    <td>${tx.AlertType}</td>
+                    <td><span class="badge ${tx.RiskLevel === 'High' ? 'badge-high' : 'badge-medium'}">${tx.RiskLevel}</span></td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+        
+        // Initial Alerts Load
+        filterAlerts();
+
+        // Populate Top Partners Tables
+        const topClients = partners.filter(p => p.Type === 'Client');
+        const topSuppliers = partners.filter(p => p.Type === 'Supplier');
+        
+        const clientBody = document.getElementById('clients-table-body');
+        if (clientBody) {
+            clientBody.innerHTML = '';
+            topClients.forEach(c => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td style="font-weight: 500;">${c.Name}</td>
+                    <td style="font-weight: 600; color: var(--color-green);">${formatRupees(c.Amount)}</td>
+                `;
+                clientBody.appendChild(tr);
+            });
+        }
+        
+        const supplierBody = document.getElementById('suppliers-table-body');
+        if (supplierBody) {
+            supplierBody.innerHTML = '';
+            topSuppliers.forEach(s => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td style="font-weight: 500;">${s.Name}</td>
+                    <td style="font-weight: 600; color: var(--color-yellow);">${formatRupees(s.Amount)}</td>
+                `;
+                supplierBody.appendChild(tr);
+            });
+        }
+    </script>
+</body>
+</html>
