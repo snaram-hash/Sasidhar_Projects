@@ -1,0 +1,62 @@
+
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="utf-8">
+        <style>
+            body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; max-width: 800px; margin: 0 auto; padding: 40px; }
+            h1, h2, h3 { color: #2c3e50; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+            p { margin-bottom: 15px; }
+            ul { margin-bottom: 20px; }
+            li { margin-bottom: 8px; }
+        </style>
+    </head>
+    <body>
+        <h1>Case Study: Building an Enterprise Credit Underwriting Platform</h1>
+<h2>1. The Business Problem</h2>
+<p>Commercial lending relies on accurate, timely risk assessments. However, the existing process for onboarding MSME (Micro, Small, and Medium Enterprises) borrowers is fundamentally broken.</p>
+<h3>1.1 The Existing Process</h3>
+<p>When a company like Harika Shipping &amp; Logistics applies for a loan, they submit a data dump: 30-page audited financial statements (ITRs), 12 months of GST returns, and multi-bank ledgers. </p>
+<p>A highly-paid Credit Analyst then manually opens these PDFs side-by-side, visually scans for numbers, and copy-pastes them into a sprawling Excel spreadsheet known as the Credit Assessment Memo (CAM).</p>
+<h3>1.2 The Pain Points</h3>
+<ul>
+<li><strong>Speed:</strong> This process takes 2 to 3 days per borrower.</li>
+<li><strong>Accuracy:</strong> Complex calculations (like adjusting Creditor Days by extracting nested Direct Expenses) are prone to human error.</li>
+<li><strong>Risk Blindness:</strong> It is impossible for a human to visually scan 10,000 lines of bank statements to calculate an exact "Bounce Rate" or identify fund diversion.</li>
+<li><strong>Auditability:</strong> Because rules are applied subjectively by different analysts in different spreadsheets, there is no centralized, enforceable credit policy.</li>
+</ul>
+<h2>2. The Solution: CUIS</h2>
+<p>I built the <strong>Credit Underwriting Intelligence Suite (CUIS)</strong> to solve this. CUIS is an enterprise decision-support platform that transforms fragmented manual tasks into a centralized, automated pipeline.</p>
+<p>By treating underwriting as a deterministic data problem rather than a subjective human task, CUIS ensures 100% policy compliance, auditability, and speed.</p>
+<h2>3. Architecture</h2>
+<p>CUIS is built using <strong>Clean Architecture</strong>. This was a deliberate choice to separate messy parsing infrastructure from core banking rules.</p>
+<ol>
+<li><strong>Infrastructure (Parsers):</strong> Specialized regex engines extract data from PDFs.</li>
+<li><strong>Database:</strong> Extracted facts are stored in a centralized SQLite database.</li>
+<li><strong>Reconciliation Service:</strong> Data is cross-checked (e.g., Audited Sales vs GST Sales).</li>
+<li><strong>Policy Engine:</strong> Reconciled data is evaluated against configurable mandates.</li>
+<li><strong>Presentation:</strong> The system generates a bank-ready Excel CAM and an HTML Dashboard.</li>
+</ol>
+<h2>4. Key Design Decisions</h2>
+<h3>4.1 Configurable Rule Engine vs. Machine Learning</h3>
+<p>I deliberately chose a deterministic Rule Engine over training an ML model. In commercial lending, regulatory bodies require banks to explicitly state <em>why</em> a loan was rejected. A black-box ML model cannot easily provide legal justification. A rule engine is 100% auditable.</p>
+<h3>4.2 Spatial-Aware Regex Parsing</h3>
+<p>Standard PDF extractors flatten text, destroying the visual hierarchy of an accounting document. I built regex rules that first capture a spatial "Zone" (e.g., everything between "Purchases" and "Gross Profit"), allowing the engine to accurately isolate and sum Direct Expenses regardless of formatting.</p>
+<h2>5. Challenges Overcome</h2>
+<p>During the development phase, a critical bug emerged: The Working Capital "Creditor Days" calculation for a logistics company was showing an absurd 19,000+ days. </p>
+<p>I traced this to the Cost of Sales denominator. The parser was only extracting raw goods "Purchases" (which are near zero for a service company), ignoring millions in "Vessel Charges" and "Godown Rents". </p>
+<p>I had to rewrite the <code>FinancialParser</code> to dynamically hunt for "Manufacturing/Direct Expenses" block. This instantly realigned the calculations to the bank's audited standards, bringing the Creditor Days to a compliant 107 Days.</p>
+<h2>6. Results &amp; Impact</h2>
+<ul>
+<li><strong>Time Saved:</strong> CAM preparation reduced from 2–3 days to <strong>under 2 minutes</strong>.</li>
+<li><strong>Accuracy:</strong> 100% automated extraction and math execution.</li>
+<li><strong>Risk Visibility:</strong> The Banking Engine automatically calculates exact bounce rates and categorizes cash flows across the entire ledger.</li>
+</ul>
+<h2>7. Future Improvements</h2>
+<ul>
+<li><strong>v2.0:</strong> Integration of OCR for unstructured, handwritten financial processing.</li>
+<li><strong>v3.0:</strong> Implementation of an LLM agent to automatically draft the "Credit Officer Narrative" based on the numerical risk alerts triggered by the Policy Engine.</li>
+</ul>
+    </body>
+    </html>
+    
