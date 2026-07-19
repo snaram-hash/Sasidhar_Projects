@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CUIS - Credit Underwriting GUI</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Glassmorphic Style -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-layout">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="brand">
+                <i class="fa-solid fa-shield-halved"></i>
+                <div class="brand-text">
+                    <h2>CUIS Engine</h2>
+                    <p>Underwriting Suite v1.0</p>
+                </div>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <button class="nav-btn active" data-tab="dashboard-tab">
+                    <i class="fa-solid fa-chart-line"></i> Dashboard
+                </button>
+                <button class="nav-btn" data-tab="borrowers-tab">
+                    <i class="fa-solid fa-users"></i> Borrowers
+                </button>
+                <button class="nav-btn" data-tab="documents-tab">
+                    <i class="fa-solid fa-folder-open"></i> Ingestion
+                </button>
+                <button class="nav-btn" data-tab="reconciliation-tab">
+                    <i class="fa-solid fa-scale-balanced"></i> Reconciliation
+                </button>
+                <button class="nav-btn" data-tab="underwriting-tab">
+                    <i class="fa-solid fa-list-check"></i> Policy Rules
+                </button>
+                <button class="nav-btn" data-tab="exports-tab">
+                    <i class="fa-solid fa-file-export"></i> Reports Export
+                </button>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <div class="active-borrower-box">
+                    <span>Borrower Context:</span>
+                    <strong id="current-borrower-name">None Selected</strong>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Workspace Area -->
+        <main class="workspace">
+            <!-- Header bar -->
+            <header class="workspace-header">
+                <div class="header-search">
+                    <label for="borrower-select-global">Active Borrower:</label>
+                    <select id="borrower-select-global">
+                        <option value="">-- Select Borrower --</option>
+                    </select>
+                </div>
+                <div class="header-actions">
+                    <div class="status-indicator">
+                        <span class="dot green"></span> Running Locally
+                    </div>
+                </div>
+            </header>
+
+            <!-- TABS CONTENT -->
+            <!-- 1. Dashboard Tab -->
+            <section id="dashboard-tab" class="tab-content active">
+                <div class="kpi-grid">
+                    <div class="kpi-card">
+                        <div class="kpi-header">
+                            <span class="kpi-title">Audited Sales</span>
+                            <div class="kpi-icon blue"><i class="fa-solid fa-wallet"></i></div>
+                        </div>
+                        <h2 class="kpi-value" id="kpi-sales">Rs. --</h2>
+                        <p class="kpi-sub">Annual Audited Revenue</p>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-header">
+                            <span class="kpi-title">Banking Credits</span>
+                            <div class="kpi-icon green"><i class="fa-solid fa-building-columns"></i></div>
+                        </div>
+                        <h2 class="kpi-value" id="kpi-credits">Rs. --</h2>
+                        <p class="kpi-sub">Total Bank Statement Deposits</p>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-header">
+                            <span class="kpi-title">CIBIL Bureau Score</span>
+                            <div class="kpi-icon yellow"><i class="fa-solid fa-star-half-stroke"></i></div>
+                        </div>
+                        <h2 class="kpi-value" id="kpi-cibil">--</h2>
+                        <p class="kpi-sub">Commercial Bureau Score</p>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-header">
+                            <span class="kpi-title">Final Risk Tier</span>
+                            <div class="kpi-icon red" id="kpi-risk-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                        </div>
+                        <h2 class="kpi-value" id="kpi-risk">--</h2>
+                        <p class="kpi-sub">Policy Engine Assessment</p>
+                    </div>
+                </div>
+
+                <div class="charts-grid">
+                    <div class="chart-card">
+                        <h3>Bank Statement Monthly Credit Turnover</h3>
+                        <canvas id="creditChart"></canvas>
+                    </div>
+                    <div class="chart-card">
+                        <h3>Reconciliation Variance Analysis</h3>
+                        <canvas id="varianceChart"></canvas>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 2. Borrowers Tab -->
+            <section id="borrowers-tab" class="tab-content">
+                <div class="grid-2col">
+                    <div class="glass-panel">
+                        <h3>Register & Onboard New Borrower</h3>
+                        <form id="onboard-form" class="standard-form">
+                            <div class="form-group">
+                                <label>Legal Entity Name</label>
+                                <input type="text" id="company_name" placeholder="e.g. HARIKA SHIPPING & LOGISTICS" required>
+                            </div>
+                            <div class="form-group">
+                                <label>PAN (Permanent Account Number)</label>
+                                <input type="text" id="pan" placeholder="10 characters (e.g. ABZPV8982E)" required>
+                            </div>
+                            <div class="form-group">
+                                <label>GSTIN</label>
+                                <input type="text" id="gstin" placeholder="15 characters (e.g. 37ABZPV8982E1ZF)" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Industry Sector</label>
+                                <input type="text" id="industry" placeholder="e.g. Logistics" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Constitution Type</label>
+                                <select id="constitution" required>
+                                    <option value="Proprietorship">Proprietorship</option>
+                                    <option value="Partnership">Partnership</option>
+                                    <option value="Private Limited">Private Limited</option>
+                                    <option value="LLP">LLP</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="submit-btn"><i class="fa-solid fa-plus"></i> Onboard Borrower</button>
+                        </form>
+                    </div>
+
+                    <div class="glass-panel">
+                        <h3>Registered Borrowers List</h3>
+                        <div class="table-container">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Legal Name</th>
+                                        <th>PAN</th>
+                                        <th>GSTIN</th>
+                                        <th>Industry</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="borrowers-table-body">
+                                    <tr><td colspan="5">No borrowers registered yet.</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 3. Ingestion Tab -->
+            <section id="documents-tab" class="tab-content">
+                <div class="grid-2col">
+                    <div class="glass-panel">
+                        <h3>Register & Upload Financial Documents</h3>
+                        <form id="upload-form" class="standard-form">
+                            <div class="form-group">
+                                <label>Borrower Account</label>
+                                <select id="document-borrower-select" required>
+                                    <option value="">-- Choose Borrower --</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Document Type</label>
+                                <select id="document-type-select" required>
+                                    <option value="BankStatement">Bank Statement (PDF)</option>
+                                    <option value="GST_Returns">GSTR-3B Tax Filing (PDF)</option>
+                                    <option value="ITR">Income Tax Return (PDF)</option>
+                                    <option value="AuditedFinancials">Audited Financial Statements (PDF)</option>
+                                    <option value="CIBIL">CIBIL Bureau Report (PDF)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Financial Year (FY)</label>
+                                <input type="text" id="document-fy" placeholder="e.g. FY24 (Leave blank if not applicable)">
+                            </div>
+                            <div class="form-group">
+                                <label>File Path on local system</label>
+                                <input type="text" id="document-filepath" placeholder="e.g. C:\\Users\\ZORO\\Documents\\AU 3401.pdf" required>
+                            </div>
+                            <button type="submit" class="submit-btn"><i class="fa-solid fa-upload"></i> Ingest Document</button>
+                        </form>
+                        
+                        <hr style="margin: 1.5rem 0; border: 0; border-top: 1px solid var(--card-border);">
+                        
+                        <h3>Bulk Folder Ingestion (Auto-Classify)</h3>
+                        <form id="bulk-folder-form" class="standard-form">
+                            <div class="form-group">
+                                <label>Borrower Account</label>
+                                <select id="bulk-borrower-select" required>
+                                    <option value="">-- Choose Borrower --</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Folder Path on local system</label>
+                                <input type="text" id="bulk-folderpath" placeholder="e.g. C:\\Users\\ZORO\\OneDrive\\Desktop\\CREDIT PROJECT\\HARIKA SHIPPING" required>
+                            </div>
+                            <button type="submit" class="submit-btn"><i class="fa-solid fa-folder-plus"></i> Ingest Entire Folder</button>
+                        </form>
+                    </div>
+
+                    <div class="glass-panel">
+                        <h3>Ingested Files & Parsing Actions</h3>
+                        <div class="table-container">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Doc ID</th>
+                                        <th>File Name</th>
+                                        <th>Category</th>
+                                        <th>FY</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="documents-table-body">
+                                    <tr><td colspan="5">Select a borrower context to view documents.</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 4. Reconciliation Tab -->
+            <section id="reconciliation-tab" class="tab-content">
+                <div class="glass-panel">
+                    <div class="panel-header-action">
+                        <h3>Cross-Source Financial Reconciliation</h3>
+                        <button id="trigger-reconciliation-btn" class="submit-btn"><i class="fa-solid fa-arrows-spin"></i> Run Reconciliation</button>
+                    </div>
+                    <div class="reconciliation-results" id="reconciliation-results-box">
+                        <p class="neutral-text">Please trigger reconciliation for the active borrower.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 5. Underwriting Tab -->
+            <section id="underwriting-tab" class="tab-content">
+                <div class="glass-panel">
+                    <div class="panel-header-action">
+                        <h3>Lending Policy Rules Assessment</h3>
+                        <button id="trigger-policy-btn" class="submit-btn"><i class="fa-solid fa-gavel"></i> Run Policy Evaluation</button>
+                    </div>
+                    <div class="policy-results" id="policy-results-box">
+                        <p class="neutral-text">Please execute policy engine evaluations for the active borrower.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 6. Exports Tab -->
+            <section id="exports-tab" class="tab-content">
+                <div class="grid-2col">
+                    <div class="glass-panel text-center">
+                        <i class="fa-regular fa-file-excel export-hero-icon green"></i>
+                        <h3>Credit Assessment Memo (CAM) Workbook</h3>
+                        <p>Generates the complete credit underwriting Excel spreadsheet populated with company, bank, GST, and policy metrics.</p>
+                        <button id="generate-cam-btn" class="submit-btn green-btn"><i class="fa-solid fa-file-arrow-down"></i> Export Excel Workbook</button>
+                        <p class="export-path" id="cam-export-path-display"></p>
+                    </div>
+
+                    <div class="glass-panel text-center">
+                        <i class="fa-solid fa-display export-hero-icon blue"></i>
+                        <h3>Interactive Web Dashboard HTML</h3>
+                        <p>Generates the standalone, beautiful HTML visualization dashboard with Chart.js canvas widgets embedded.</p>
+                        <button id="generate-dashboard-btn" class="submit-btn blue-btn"><i class="fa-solid fa-laptop-code"></i> Compile Web Report</button>
+                        <p class="export-path" id="dashboard-export-path-display"></p>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+    
+    <!-- Toast notifications -->
+    <div id="toast" class="toast hidden">Toast message here</div>
+
+    <script src="app.js"></script>
+</body>
+</html>
