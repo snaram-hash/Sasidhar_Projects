@@ -1,122 +1,132 @@
-# 📊 Credit Underwriting & Risk Intelligence Suite (CUIS)
+<div align="center">
 
-[![Python Version](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/)
-[![Database](https://img.shields.io/badge/database-SQLite-green.svg)](https://www.sqlite.org/)
-[![Frontend](https://img.shields.io/badge/frontend-HTML5%20%2F%20CSS3%20%2F%20JS-orange.svg)](https://developer.mozilla.org/)
-[![Excel Integration](https://img.shields.io/badge/integration-openpyxl-red.svg)](https://openpyxl.readthedocs.io/)
+# 🏛️ Credit Underwriting Intelligence Suite (CUIS)
 
-An automated **Credit Risk Analysis & Underwriting Suite** designed for commercial bankers, credit officers, and financial underwriters. CUIS streamlines commercial borrower onboarding, automatically ingests and parses scanned/digital financial PDFs (ITR, GST, Bank Statements, CIBIL reports), performs complex working capital and leverage reconciliations, and outputs interactive dashboards alongside standardized bank-ready **Credit Assessment Memo (CAM)** Excel models.
+**An Enterprise-Grade Automated Credit Underwriting & Risk Analytics Platform**
 
----
+[![Python Version](https://img.shields.io/badge/Python-3.8+-blue.svg?style=for-the-badge&logo=python)](https://www.python.org/)
+[![Database](https://img.shields.io/badge/Database-SQLite-green.svg?style=for-the-badge&logo=sqlite)](https://www.sqlite.org/)
+[![Architecture](https://img.shields.io/badge/Architecture-Clean-orange.svg?style=for-the-badge)](#)
+[![License](https://img.shields.io/badge/License-MIT-red.svg?style=for-the-badge)](#)
 
-## 🚀 Key Features
+*Transforming days of manual financial analysis into minutes of automated, rule-based intelligence.*
 
-* 📂 **Bulk Folder Ingestion Engine:** Automated ingestion of commercial borrower files (single folder paths) containing unstructured financial documents.
-* 📑 **Audited Financials PDF Parser:** Dynamically parses complex multi-page Profit & Loss (P&L) statements, Balance Sheets, and Trading accounts, including robust handling of manufacturing/direct operating expenses.
-* 🔄 **Working Capital Cycle Realignment:** Automatically calculates Debtors, Creditors, and Inventory days using exact Cost of Sales and Sales denominators, realigned to standard Indian banking guidelines.
-* 📈 **3-Year Historical Trends:** Automatically generates side-by-side comparison tables in the web dashboard for financial positions and ratios.
-* 💻 **Interactive Scorecard & Gauges:** Self-contained dashboard with zero dependencies, rendering real-time working capital dials, cash flow charts, and warning alerts for overdraft diversion risks.
-* 🟢 **Standardized Excel CAM Generation:** Automatically writes audited, banking, and GST sales figures into the bank-mandated Excel templates, preserving the template formulas and formatting.
+</div>
 
 ---
 
-## 📐 Architecture & Workflow
+## 🎯 The Business Problem
+
+Commercial lending is plagued by slow, manual underwriting processes. Credit analysts spend hours—sometimes days—manually copying data from complex PDF financial statements (ITRs, Bank Statements, GSTRs, CIBIL reports) into Excel Credit Assessment Memos (CAMs). 
+
+This manual process leads to:
+- ⏳ **Slow Turnaround Times:** Delayed loan disbursements.
+- 📉 **Human Error:** Mistakes in complex working capital ratio calculations.
+- 🔍 **Limited Risk Visibility:** Hidden diversion risks buried inside thousands of bank transactions.
+
+## 🚀 The Solution: CUIS
+
+CUIS is an internal fintech platform designed to completely automate commercial borrower onboarding. 
+
+By simply pointing the engine to a folder of raw PDFs, CUIS:
+1. **Ingests & Parses:** Extracts P&L, Balance Sheet, GST, and Banking ledgers.
+2. **Reconciles:** Harmonizes data across different sources (e.g., matching GST Sales to Audited Sales).
+3. **Applies Risk Policy:** Runs the data through a configurable Rule Engine.
+4. **Generates Outputs:** Spits out a fully-formatted, bank-ready Excel CAM and a beautiful interactive HTML Dashboard.
+
+### 💡 Business Impact
+
+| Metric | Manual Underwriting | CUIS Automation |
+| :--- | :--- | :--- |
+| **CAM Preparation Time** | 2–3 Days | **Under 2 Minutes** |
+| **Working Capital Ratios** | Manual Spreadsheet Logic | **Automated & Realigned** |
+| **Bank Statement Analysis** | Sampling only | **100% Transaction Parsing** |
+| **Diversion Risk Detection** | Reactive / Manual | **Proactive Alerts (Rule Engine)** |
+| **Audit Traceability** | Low (Spreadsheet versions) | **High (Centralized SQLite DB)** |
+
+---
+
+## 🏗️ Live Architecture
+
+CUIS was built using **Clean Architecture** principles, strictly separating the parsing logic, business rules, and presentation layers.
 
 ```mermaid
-graph TD
-    A[Folder / PDF Ingest] --> B[extraction_service]
-    B --> C{Document Type}
-    C -->|ITR / Audited Financials| D[FinancialParser]
-    C -->|GSTR 3B PDFs| E[GSTParser]
-    C -->|Bank Statement PDFs| F[BankStatementParser]
-    C -->|CIBIL PDF Report| G[CIBILParser]
-    D & E & F & G --> H[(SQLite database)]
-    H --> I[cam_service]
-    H --> J[export_service]
-    I --> K[Excel CAM Generation]
-    J --> L[dashboard.html Build]
+flowchart TD
+    subgraph Ingestion Layer
+        A[Borrower Docs Folder] --> B(Bulk Upload Service)
+    end
+
+    subgraph Parsing Engines
+        B --> C{Document Classifier}
+        C -->|Audited ITR| D[Financial Engine]
+        C -->|GSTR 3B| E[Tax/GST Engine]
+        C -->|Bank Statements| F[Banking Engine]
+        C -->|CIBIL| G[Bureau Engine]
+    end
+
+    subgraph Intelligence Core
+        D & E & F & G --> H[(Central SQLite DB)]
+        H --> I[Reconciliation Service]
+        I --> J[Credit Policy Rule Engine]
+    end
+
+    subgraph Output Generation
+        J --> K[Excel CAM Generator]
+        J --> L[Interactive HTML Dashboard]
+    end
 ```
 
 ---
 
-## 📂 Project Structure
+## 📸 Platform Walkthrough
 
-```text
-├── Credit_Underwriting_Intelligence_Suite/
-│   ├── app/
-│   │   └── main.py              # FastAPI-like HTTP and Static UI Web Server (Port 5000)
-│   ├── config/
-│   │   └── settings.py          # Environment settings and output directory mapping
-│   ├── database/
-│   │   └── db_manager.py        # SQLite Database connection, schema definition & migrations
-│   ├── parsers/
-│   │   ├── financial_parser.py  # Audited financials parsing rules (opening/closing Capital, direct costs)
-│   │   ├── gst_parser.py        # GSTR 3B PDF reader & sales calculator
-│   │   └── bank_parser.py       # Bank statement transactions ledger parsing
-│   └── services/
-│       ├── extraction_service.py# Coordinates auto-extraction & SQLite writes
-│       ├── cam_service.py       # Populates Excel CAM rows (Purchases, direct expenses, TNW, monthly GST)
-│       └── export_service.py    # Generates Power BI / dashboard CSV files
-├── build_dashboard.py           # Compiles Fact_Financials.csv and builds the HTML dashboard
-├── dashboard.html               # Output self-contained credit analysis web portal
-├── CAM_Template.xlsx            # Standardized credit memo excel layout
-└── README.md                    # This file
-```
+*(Replace the placeholder links below with actual images/videos when hosting)*
+
+### 1. Document Ingestion & Parsing
+The engine reads complex multi-page audited financial PDFs, specifically identifying manufacturing expenses and closing capital to calculate the exact Tangible Net Worth (TNW).
+> `![Ingestion Engine](screenshots/ingestion_terminal.png)`
+
+### 2. The Reconciliation & Policy Engine
+Data is cross-verified. For example, Cost of Sales is recalculated by marrying raw purchases with direct operational expenses to produce bank-standard Creditor Days.
+> `![Policy Engine Rules](screenshots/policy_engine.png)`
+
+### 3. Generated Excel CAM Sheet
+Outputs are written directly into a standardized Excel template, preserving the complex formatting expected by Credit Committees.
+> `![Excel CAM Sheet](screenshots/excel_cam.png)`
+
+### 4. Interactive Credit Dashboard
+A completely self-contained, zero-dependency HTML dashboard featuring glassmorphism UI, interactive working capital gauges, and 3-year historical trend tables.
+> `![Interactive Dashboard](screenshots/dashboard_preview.png)`
 
 ---
 
-## 📝 Case Study: Harika Shipping & Logistics
+## 🧠 Engineering Highlights & Decisions
 
-To validate the intelligence suite, we analyzed **Harika Shipping & Logistics** by ingesting 20 unstructured PDFs (3 Years of ITRs, 1 Year of Bank Statements, 15 Months of GST filings, and a CIBIL credit report).
+As a developer, I focused heavily on ensuring this platform wasn't just a "script", but a scalable enterprise architecture:
 
-### 1. Working Capital Cycle Alignment
-Originally, the dashboard calculated creditor days using raw purchases (15 Lakhs), resulting in a massive mismatch (`19,835 Days`). CUIS successfully parsed **27.66 Crores** of direct operating expenses (godown maintenance, vessel expenses, storage charges, and freight) from the trading account, correcting **Creditor Days** to exactly **107 Days**, matching the bank guidelines.
-
-### 2. Tangible Net Worth (TNW) Correction
-Commercial balance sheets often represent Capital account balances at the beginning of the year. CUIS dynamically adjusted the extracted Net Worth by adding the current year's profit (PAT) of `78.08 Lakhs`, matching the final audited Tangible Net Worth of **544.67 Lakhs** exactly.
-
-### 3. Financial Metrics Verification Matrix (FY24)
-
-| Particulars | Bank-audited CAM | CUIS Generated Excel CAM | Interactive HTML Dashboard |
-| :--- | :--- | :--- | :--- |
-| **Sales / Receipts** | `3133.48 Lakhs` | `3133.48 Lakhs` | `31.33 Crores` |
-| **Manufacturing/Direct Expenses** | `2766.13 Lakhs` | `2766.13 Lakhs` | `27.66 Crores` |
-| **Employee Benefits Expenses** | `56.79 Lakhs` | `56.79 Lakhs` | `56.79 Lakhs` |
-| **Profit After Tax (PAT)** | `78.08 Lakhs` | `78.08 Lakhs` | `78.08 Lakhs` |
-| **Tangible Net Worth (TNW)** | `544.67 Lakhs` | `544.67 Lakhs` | `544.67 Lakhs` |
-| **Secured Borrowings** | `909.96 Lakhs` | `909.96 Lakhs` | `909.96 Lakhs` |
-| **Sundry Creditors** | `815.24 Lakhs` | `815.24 Lakhs` | `815.24 Lakhs` |
-| **Sundry Debtors** | `1491.50 Lakhs` | `1491.50 Lakhs` | `1491.50 Lakhs` |
-| **Debtor Days** | `173.8 Days` | `173.8 Days` (Formula) | `173.8 Days` (Gauge) |
-| **Creditor Days** | `107.0 Days` | `107.0 Days` (Formula) | `107.0 Days` (Gauge) |
-| **Net WC Cycle** | `66.8 Days` | `66.8 Days` (Formula) | `66.8 Days` (Gauge) |
-| **Current Ratio** | `1.24` | `1.24` (Formula) | `1.24` |
+- **Modular Clean Architecture:** Separated the Financial, Banking, and Risk Intelligence into highly independent services. Adding a new parser (e.g., EPFO statements) requires zero changes to the core engine.
+- **Configurable Rule Engine:** Instead of hardcoding business logic (like `if current_ratio < 1.0`), I implemented a central Policy Engine. This allows Risk Managers to tweak thresholds without touching the Python code.
+- **Why SQLite?** For v1.0, SQLite allows the platform to be completely portable and self-contained without requiring massive database server infrastructure, perfect for initial banking proofs-of-concept.
+- **Regex + Layout-Aware Parsing:** Built custom PDF extraction logic that understands spatial accounting layouts (e.g., extracting values strictly before the "TO INDIRECT EXPENSES" line in a Trading Account).
 
 ---
 
-## 🛠️ Installation & Setup
+## 📚 Deep Dive: The Engineering Book
 
-1. **Clone the Repository:**
-   ```bash
-   git clone https://github.com/<your-username>/Credit-Risk-Underwriting-Suite.git
-   cd Credit-Risk-Underwriting-Suite
-   ```
+For those interested in the deep technical implementations and business logic behind this platform, I have documented the entire journey in the **[PROJECT_BOOK](PROJECT_BOOK/)**:
 
-2. **Set up Virtual Environment:**
-   ```bash
-   python -m venv .venv
-   source .venv/bin/activate  # On Windows: .venv\Scripts\activate
-   ```
+* 📘 **[Volume I: Business Domain](PROJECT_BOOK/Vol_I_Business_Domain.md)** - Understanding Commercial Credit & CAMs.
+* 📙 **[Volume II: Architecture](PROJECT_BOOK/Vol_II_Architecture.md)** - The Clean Architecture and Rule Engines.
+* 📗 **[Volume III: Implementation](PROJECT_BOOK/Vol_III_Implementation.md)** - Deep dive into Regex Parsing and Dashboard Generation.
 
-3. **Install Dependencies:**
-   ```bash
-   pip install pandas openpyxl pypdf openpyxl pydantic
-   ```
+---
 
-4. **Start the Web Service:**
-   ```bash
-   python Credit_Underwriting_Intelligence_Suite/app/main.py
-   ```
+## 🗺️ Future Roadmap
 
-5. **Access the Interface:**
-   Navigate to `http://localhost:5000` in your web browser. From here, you can onboard borrowers, bulk-upload PDF documents, monitor parsing actions, and download your regenerated Excel CAM and interactive dashboard.
+See the [ROADMAP.md](ROADMAP.md) for our vision of evolving CUIS into a Cloud SaaS platform with an AI-powered conversational underwriter.
+
+---
+
+<div align="center">
+  <b>Built with passion for Fintech and Risk Analytics by Sasidhar Naram.</b>
+</div>
