@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" width="100%" height="100%">
+    <defs>
+        <filter id="shadow" x="-5%" y="-5%" width="110%" height="110%">
+            <feDropShadow dx="0" dy="10" stdDeviation="15" flood-color="#000000" flood-opacity="0.3"/>
+        </filter>
+    </defs>
+    <rect x="10" y="10" width="780" height="430" rx="10" fill="#1e1e1e" filter="url(#shadow)"/>
+    
+    <!-- Mac OS Controls -->
+    <circle cx="35" cy="30" r="6" fill="#ff5f56"/>
+    <circle cx="55" cy="30" r="6" fill="#ffbd2e"/>
+    <circle cx="75" cy="30" r="6" fill="#27c93f"/>
+    
+    <!-- Title -->
+    <text x="400" y="35" font-family="sans-serif" font-size="14" font-weight="600" fill="#888888" text-anchor="middle">Terminal - financial_engine.py</text>
+    <path d="M 10 50 L 790 50" stroke="#333333" stroke-width="1"/>
+    
+    <!-- Content -->
+    <text x="30" y="70" font-family="monospace" font-size="14" fill="#d4d4d4"><tspan fill="#4ec9b0">INFO</tspan> [FinancialEngine] Initializing extraction for: Harika_ITR_FY24.pdf</text>
+<text x="30" y="94" font-family="monospace" font-size="14" fill="#d4d4d4"><tspan fill="#dcdcaa">DEBUG</tspan> Parsing Spatial Zones: Found "Trading Account" at page 2, y=450</text>
+<text x="30" y="118" font-family="monospace" font-size="14" fill="#d4d4d4"><tspan fill="#ce9178">Found</tspan> Direct Expenses: Vessel Charges = 1,450,000</text>
+<text x="30" y="142" font-family="monospace" font-size="14" fill="#d4d4d4"><tspan fill="#ce9178">Found</tspan> Direct Expenses: Godown Rent = 320,000</text>
+<text x="30" y="166" font-family="monospace" font-size="14" fill="#d4d4d4"><tspan fill="#dcdcaa">DEBUG</tspan> Recalculating Cost of Sales...</text>
+<text x="30" y="190" font-family="monospace" font-size="14" fill="#d4d4d4"><tspan fill="#4ec9b0">SUCCESS</tspan> Total Adjusted Cost of Sales = 45,600,000</text>
+<text x="30" y="214" font-family="monospace" font-size="14" fill="#d4d4d4"><tspan fill="#4ec9b0">SUCCESS</tspan> Tangible Net Worth (TNW) = 12,450,000</text>
+<text x="30" y="238" font-family="monospace" font-size="14" fill="#d4d4d4"></text>
+<text x="30" y="262" font-family="monospace" font-size="14" fill="#d4d4d4"><tspan fill="#569cd6">==></tspan> Financial data committed to SQLite DB successfully.</text>
+
+</svg>
