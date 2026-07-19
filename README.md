@@ -12,7 +12,7 @@
 [![Testing](https://img.shields.io/badge/Pytest-Passing-brightgreen.svg?style=for-the-badge&logo=pytest)](#)
 [![License](https://img.shields.io/badge/License-MIT-red.svg?style=for-the-badge)](#)
 [![Version](https://img.shields.io/badge/Version-1.0.0-blueviolet.svg?style=for-the-badge)](#)
-[![Status](https://img.shields.io/badge/Status-Enterprise_Ready-success.svg?style=for-the-badge)](#)
+[![Status](https://img.shields.io/badge/Status-Enterprise_Architecture-success.svg?style=for-the-badge)](#)
 
 </div>
 
